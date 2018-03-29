@@ -58,8 +58,7 @@
                       (define gcc-lib
                         (assoc-ref inputs "gcc:lib"))
                       (define ld.so
-                        (string-append libc "/lib/"
-                                       ,(glibc-dynamic-linker)))
+                        (string-append libc ,(glibc-dynamic-linker)))
                       (define rpath
                         (string-join (list "$ORIGIN"
                                            (string-append out "/lib")
