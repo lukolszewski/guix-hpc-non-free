@@ -20,7 +20,7 @@
 
 (define (make-cuda version origin)
   (package
-    (name "cuda")
+    (name "cuda-toolkit")
     (version version)
     (source origin)
     (build-system gnu-build-system)
