@@ -28,10 +28,7 @@
                "doc"))                            ;196 MiB
     (arguments
      `(#:modules ((guix build utils)
-                  (guix build gremlin)
                   (guix build gnu-build-system)
-                  (guix elf)
-                  (ice-9 binary-ports)
                   (ice-9 match))
 
        #:strip-binaries? #f                       ;no need
@@ -96,29 +93,6 @@
                         (invoke "perl" "install-linux.pl"
                                 (string-append "--prefix=" out))
                         (rename-file lib64 lib)
-                        #t)))
-                  (add-after 'install 'create-libcuda-symlink
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; The package installs 'libcuda.so' with SONAME
-                      ;; 'libcuda.so.1', but it fails to install a file with
-                      ;; that name.  Fix that for all these files.
-                      (let* ((out (assoc-ref outputs "out"))
-                             (lib (string-append out "/lib/stubs")))
-                        (define (symlink-soname so)
-                          (let* ((elf     (call-with-input-file so
-                                            (compose parse-elf
-                                                     get-bytevector-all)))
-                                 (dyninfo (elf-dynamic-info elf))
-                                 (soname  ((@@ (guix build gremlin)
-                                               elf-dynamic-info-soname)
-                                           dyninfo)))
-                            (format #t "'~a' has SONAME '~a'~%"
-                                    so soname)
-                            (symlink (basename so)
-                                     (string-append lib "/" soname))))
-
-                        (for-each symlink-soname
-                                  (find-files lib "\\.so$"))
                         #t)))
                   (add-after 'install 'move-documentation
                     (lambda* (#:key outputs #:allow-other-keys)
