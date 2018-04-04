@@ -11,6 +11,9 @@
 (define-module (non-free cuda)
   #:use-module (guix)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
@@ -133,3 +136,46 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
 (define-public cuda
   ;; Default version.
   cuda-8.0)
+
+(define-public no-float128
+  ;; FIXME: We cannot simply add it to 'propagated-inputs' of cuda-toolkit
+  ;; because then it would come after glibc in CPLUS_INCLUDE_PATH.
+  (package
+    (name "no-float128")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+
+                   (let* ((header "/include/bits/floatn.h")
+                          (out    (assoc-ref %outputs "out"))
+                          (target (string-append out (dirname header)))
+                          (libc   (assoc-ref %build-inputs "libc")))
+                     (mkdir-p target)
+                     (install-file (string-append libc header) target)
+                     (substitute* (string-append target "/" (basename header))
+                       (("#([[:blank:]]*)define __HAVE_FLOAT128[[:blank:]]+1"
+                         _ space)
+                        (string-append "#" space
+                                       "define __HAVE_FLOAT128 0")))
+                     #t))))
+    (inputs `(("libc" ,glibc)))
+    (synopsis "@file{<bits/floatn.h>} header that disables float128 support")
+    (description
+     "This package provides a @file{<bits/floatn.h>} header to override that
+of glibc and disable float128 support.  This is required allow the use of
+@command{nvcc} with glibc 2.26+.  Otherwise, @command{nvcc} fails like this:
+
+@example
+/gnu/store/…-glibc-2.26.105-g0890d5379c/include/bits/floatn.h(61): error: invalid argument to attribute \"__mode__\"
+
+/gnu/store/…-glibc-2.26.105-g0890d5379c/include/bits/floatn.h(73): error: identifier \"__float128\" is undefined
+@end example
+
+See also
+@url{https://devtalk.nvidia.com/default/topic/1023776/cuda-programming-and-performance/-request-add-nvcc-compatibility-with-glibc-2-26/1}.")
+    (home-page "https://hpc.guixsd.org")
+    (license license:gpl3+)))
