@@ -22,6 +22,9 @@ visible to the `guix` command-line tools, simply drop them in
 `GUIX_PACKAGE_PATH`:
 
 ```
+# We assume https://gitlab.inria.fr/guix-hpc/guix-hpc is already
+# in your GUIX_PACKAGE_PATH.
+
 $ git clone https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git
 $ export GUIX_PACKAGE_PATH=$PWD/guix-hpc-non-free/modules:$GUIX_PACKAGE_PATH
 $ guix package -i starpu-cuda
