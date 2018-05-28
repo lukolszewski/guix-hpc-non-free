@@ -10,7 +10,9 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages version-control))
 
 (define-public gitlab-runner
   (package
@@ -34,10 +36,24 @@
                           (out    (assoc-ref %outputs "out"))
                           (install-dir (string-append out "/bin"))
                           (executable  (string-append install-dir
-                                                      "/gitlab-runner")))
+                                                      "/gitlab-runner"))
+                          (bash    (string-append
+                                    (assoc-ref %build-inputs "bash")
+                                    "/bin/"))
+                          (git-dir (string-append
+                                    (assoc-ref %build-inputs "git")
+                                    "/bin/")))
+                     (setenv "PATH" (string-append
+                                     (getenv "PATH") ":"
+                                     bash))
                      (mkdir-p install-dir)
                      (copy-file source executable)
-                     (chmod executable #o555)))))
+                     (chmod executable #o555)
+                     (wrap-program executable
+                       `("PATH" ":" prefix (,git-dir)))))))
+    (inputs
+     `(("git" ,git)
+       ("bash" ,bash)))
     (synopsis "Gitlab Runner")
     (description
      "The official GitLab Runner written in Go.  It runs tests and sends the
