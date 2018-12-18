@@ -1,0 +1,9 @@
+;; This is a GNU Guix channel.  This file provides meta-data about the
+;; channel.
+
+(channel
+ (version 0)
+ (dependencies
+  (channel
+   (name guix-hpc)
+   (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git"))))
