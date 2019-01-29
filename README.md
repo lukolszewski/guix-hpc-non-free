@@ -25,8 +25,22 @@ following snippet:
 ```
 (cons (channel
         (name 'guix-hpc-non-free)
-        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
+
+        ;; Downloading directly from
+        ;; <https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git> would
+        ;; would require authentication, so use a local checkout instead.
+        (url (string-append "file://" (getenv "HOME")
+		                    "/src/guix-hpc-non-free")))
       %default-channels)
+```
+
+This assumes that you have first arranged to clone this very repo under
+`~/src`:
+
+```
+mkdir -p src
+cd src
+git clone https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git
 ```
 
 That way, `guix pull` will systematically pull not only Guix, but also
