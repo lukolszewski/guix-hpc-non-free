@@ -13,12 +13,11 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
-(define-public chamelon/mkl
+(define-public chameleon/mkl
   ;; Chameleon linked against MKL.
   (package
     (inherit chameleon)
     (name "chameleon-mkl")
-    (inputs `(("blas" ,mkl)
-              ("lapack" ,mkl)
-              ,@(fold alist-delete (package-inputs chameleon)
-                      '("blas" "lapack"))))))
+    (propagated-inputs `(("lapack" ,mkl)
+              ,@(fold alist-delete (package-propagated-inputs chameleon)
+                      '("lapack"))))))
