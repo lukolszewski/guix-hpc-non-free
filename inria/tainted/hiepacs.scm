@@ -9,7 +9,9 @@
 (define-module (inria tainted hiepacs)
   #:use-module (guix)
   #:use-module (inria hiepacs)
+  #:use-module (inria storm)
   #:use-module (non-free mkl)
+  #:use-module (gnu packages mpi)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
@@ -21,3 +23,40 @@
     (propagated-inputs `(("lapack" ,mkl)
               ,@(fold alist-delete (package-propagated-inputs chameleon)
                       '("lapack"))))))
+
+(define-public chameleon/mkl+openmpi
+  ;; Chameleon linked against MKL.
+  (package
+    (inherit chameleon/mkl)
+    (name "chameleon-mkl-openmpi")
+    (propagated-inputs `(("mpi" ,openmpi)
+                         ("starpu" ,starpu+openmpi)
+                         ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon))))
+     (arguments
+      (substitute-keyword-arguments (package-arguments chameleon)
+        ((#:configure-flags flags '())
+         `(cons "-DCHAMELEON_USE_MPI=ON" ,flags))))))
+
+ (define-public chameleon/mkl+madmpi
+   (package
+     (inherit chameleon/mkl)
+     (name "chameleon-madmpi")
+     (propagated-inputs `(("mpi" ,nmad-mini)
+                          ("starpu" ,starpu+madmpi)
+                          ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon))))
+     (arguments
+      (substitute-keyword-arguments (package-arguments chameleon)
+        ((#:configure-flags flags '())
+         `(cons "-DCHAMELEON_USE_MPI=ON" ,flags))))))
+
+ (define-public chameleon/mkl+nmad
+   (package
+     (inherit chameleon/mkl)
+     (name "chameleon-nmad")
+     (propagated-inputs `(("mpi" ,nmad)
+                          ("starpu" ,starpu+nmad)
+                          ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon))))
+     (arguments
+      (substitute-keyword-arguments (package-arguments chameleon)
+        ((#:configure-flags flags '())
+         `(cons "-DCHAMELEON_USE_MPI=ON" ,flags))))))
