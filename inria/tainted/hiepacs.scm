@@ -10,6 +10,8 @@
   #:use-module (guix)
   #:use-module (inria hiepacs)
   #:use-module (inria storm)
+  #:use-module (inria tainted storm)
+  #:use-module (inria storm-pm2)
   #:use-module (non-free mkl)
   #:use-module (gnu packages mpi)
   #:use-module (guix utils)
