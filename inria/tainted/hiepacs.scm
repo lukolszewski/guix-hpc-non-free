@@ -33,9 +33,9 @@
     (name "chameleon-mkl-openmpi")
     (propagated-inputs `(("mpi" ,openmpi)
                          ("starpu" ,starpu+openmpi)
-                         ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon))))
+                         ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon/mkl))))
      (arguments
-      (substitute-keyword-arguments (package-arguments chameleon)
+      (substitute-keyword-arguments (package-arguments chameleon/mkl)
         ((#:configure-flags flags '())
          `(cons "-DCHAMELEON_USE_MPI=ON" ,flags))))))
 
@@ -45,9 +45,9 @@
      (name "chameleon-madmpi")
      (propagated-inputs `(("mpi" ,nmad-mini)
                           ("starpu" ,starpu+madmpi)
-                          ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon))))
+                          ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon/mkl))))
      (arguments
-      (substitute-keyword-arguments (package-arguments chameleon)
+      (substitute-keyword-arguments (package-arguments chameleon/mkl)
         ((#:configure-flags flags '())
          `(cons "-DCHAMELEON_USE_MPI=ON" ,flags))))))
 
@@ -57,8 +57,8 @@
      (name "chameleon-nmad")
      (propagated-inputs `(("mpi" ,nmad)
                           ("starpu" ,starpu+nmad)
-                          ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon))))
+                          ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon/mkl))))
      (arguments
-      (substitute-keyword-arguments (package-arguments chameleon)
+      (substitute-keyword-arguments (package-arguments chameleon/mkl)
         ((#:configure-flags flags '())
          `(cons "-DCHAMELEON_USE_MPI=ON" ,flags))))))
