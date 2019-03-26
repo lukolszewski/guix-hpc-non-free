@@ -42,7 +42,7 @@
  (define-public chameleon/mkl+madmpi
    (package
      (inherit chameleon/mkl)
-     (name "chameleon-madmpi")
+     (name "chameleon-mkl-madmpi")
      (propagated-inputs `(("mpi" ,nmad-mini)
                           ("starpu" ,starpu+madmpi)
                           ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon/mkl))))
@@ -54,7 +54,7 @@
  (define-public chameleon/mkl+nmad
    (package
      (inherit chameleon/mkl)
-     (name "chameleon-nmad")
+     (name "chameleon-mkl-nmad")
      (propagated-inputs `(("mpi" ,nmad)
                           ("starpu" ,starpu+nmad)
                           ,@(delete `("starpu" ,starpu) (package-propagated-inputs chameleon/mkl))))
