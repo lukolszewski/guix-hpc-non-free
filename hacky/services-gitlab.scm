@@ -105,12 +105,6 @@
                (let ((command (list #$(file-append package "/bin/gitlab-runner")
                                     "run" "--config" config-file)))
                  (setenv "SSL_CERT_DIR" certs-dir)
-
-                 ;; The runner will want to run Git.
-                 (setenv "PATH"
-                         (string-append #$(file-append git-minimal "/bin") ":"
-                                        (or (getenv "PATH") "")))
-
                  (if (register-runner)
                      (fork+exec-command command)
                      #f)))))
@@ -127,5 +121,11 @@
           (service-extension shepherd-root-service-type
                              (compose list gitlab-runner-shepherd-service))
           (service-extension activation-service-type
-                             %gitlab-runner-activation)))
+                             %gitlab-runner-activation)
+
+          ;; 'gitlab-runner' wants to run Git, but since it runs its scripts
+          ;; with 'bash --login', PATH is essentially limited to
+          ;; /run/current-system/profile/bin.  So put Git in there.
+          (service-extension profile-service-type
+                             (const (list git-minimal)))))
    (default-value (gitlab-runner-configuration))))
