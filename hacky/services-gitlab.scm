@@ -80,7 +80,7 @@
                              '((gnu build shepherd)))
        (shepherd-service
         (documentation "Gitlab-runner daemon")
-        (provision '(gitlab-runner-daemon))
+        (provision '(gitlab-runner))
         (requirement '(networking))
         (modules '((gnu build shepherd)
                    (shepherd service)))
