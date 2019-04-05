@@ -2,6 +2,7 @@
 ;;; of the GNU GPL version 3 or (at your option) any later version.
 ;;;
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 
 (define-module (hacky services-gitlab)
   #:use-module (hacky gitlab)
@@ -11,6 +12,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages certs)
+  #:use-module (gnu packages version-control)
   #:use-module (guix gexp)
   #:use-module (guix modules)
   #:use-module (guix records)
@@ -103,6 +105,12 @@
                (let ((command (list #$(file-append package "/bin/gitlab-runner")
                                     "run" "--config" config-file)))
                  (setenv "SSL_CERT_DIR" certs-dir)
+
+                 ;; The runner will want to run Git.
+                 (setenv "PATH"
+                         (string-append #$(file-append git-minimal "/bin") ":"
+                                        (or (getenv "PATH") "")))
+
                  (if (register-runner)
                      (fork+exec-command command)
                      #f)))))
