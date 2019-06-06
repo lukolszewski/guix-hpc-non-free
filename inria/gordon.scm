@@ -18,35 +18,9 @@
   #:use-module (gnu packages python)
   #:use-module (non-free mkl)
   #:use-module (inria storm)
-  #:use-module (inria storm-pm2)
+  #:use-module (inria tadaam)
   #:use-module (inria hiepacs))
 
-;; waiting for an hdf5 patch to enable threadsafe
-(define-public hd5*
-  (package
-    (inherit hdf5)
-    (name "hdf5-flo")
-    (outputs '("out"))
-    (arguments
-     (substitute-keyword-arguments (package-arguments hdf5)
-       ((#:configure-flags flags '())
-        `(append '("--with-pthread" "--enable-threadsafe" "--enable-unsupported")
-                 ,flags))
-       ((#:modules modules '((guix build gnu-build-system)
-                             (guix build utils)))
-        (cons `(srfi srfi-1) modules))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'patch-configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* "configure"
-                 (("/bin/mv") "mv"))
-               ;; The rest of the original 'patch-configure' phase is
-               ;; concerned with Fortran things.
-               #t))
-           ;; Remove the 'split' phase, which is about moving Fortran files
-           ;; to the "fortran" output.
-           (delete 'split)))))))
 
 (define-public fmr
   (package
