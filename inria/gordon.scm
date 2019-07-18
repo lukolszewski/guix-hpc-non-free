@@ -27,17 +27,7 @@
     (name "fmr")
     (version "55938b987201c89f007eae3cc321597536096c06")
     (home-page "https://gitlab.inria.fr/piblanch/fmr")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit version)
-                    ;; We need the submodule in 'CMakeModules/morse_cmake'.
-                    (recursive? #t)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0bw71a8yqdy3ck8faz6vqryhz1ghwwsvbcgdd5r0wcchhkxxwd6k"))))
+    (source #f)
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
@@ -67,17 +57,7 @@ Dimensionality Reduction for very large datasets")
      "Librairies for Multivariate Data Analysis and Dimensionality
 Reduction for very large datasets.")
     (license license:cecill-c)
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit version)
-                    ;; We need the submodule in 'cmake_modules/morse'.
-                    (recursive? #t)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0bw71a8yqdy3ck8faz6vqryhz1ghwwsvbcgdd5r0wcchhkxxwd6k"))))
+    (source #f)
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
