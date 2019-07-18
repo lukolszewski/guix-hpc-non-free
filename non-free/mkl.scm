@@ -80,7 +80,10 @@
                #t))))
 
        ;; We don't need the tool chain, Coreutils, and all that.
-       #:implicit-inputs? #f))
+       #:implicit-inputs? #f
+
+       ;; Let's not publish or obtain substitutes for that.
+       #:substitutable? #f))
     (native-inputs
      `(("tar" ,tar)
        ("gzip" ,gzip)

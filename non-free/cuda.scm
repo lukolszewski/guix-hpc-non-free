@@ -6,7 +6,7 @@
 ;;; are detrimental to user freedom and to proper scientific review and
 ;;; experimentation.  As such, we kindly invite you not to share it.
 ;;;
-;;; Copyright © 2018 Inria
+;;; Copyright © 2018, 2019 Inria
 
 (define-module (non-free cuda)
   #:use-module (guix)
@@ -33,6 +33,9 @@
      `(#:modules ((guix build utils)
                   (guix build gnu-build-system)
                   (ice-9 match))
+
+       ;; Let's not publish or obtain substitutes for that.
+       #:substitutable? #f
 
        #:strip-binaries? #f                       ;no need
 
