@@ -4,10 +4,11 @@
 ;;; Note that this module provides packages that depend on "non-free"
 ;;; software, which denies users the ability to study and modify it.
 ;;;
-;;; Copyright © 2018 Inria
+;;; Copyright © 2018, 2019 Inria
 
 (define-module (inria tainted storm)
   #:use-module (guix)
+  #:use-module (gnu packages gcc)
   #:use-module (inria storm)
   #:use-module (non-free cuda))
 
@@ -16,7 +17,10 @@
     (inherit starpu)
     (name "starpu-cuda")
     (native-inputs
-     `(("no-float128" ,no-float128)
+     ;; "host_config.h" in 'cuda-toolkit' says "gcc versions later than 5 are
+     ;; not supported".  Thus, provide GCC 5.x.
+     `(("gcc-5" ,gcc-5)
+       ("no-float128" ,no-float128)
        ,@(package-native-inputs starpu)))
     (inputs
      `(("cuda" ,cuda)
