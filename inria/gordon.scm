@@ -37,6 +37,7 @@
        #:tests? #f))
     (inputs `(("lapack" ,openblas)
               ("hdf5" , hdf5)
+              ("zlib" , zlib)
               ("chameleon" ,chameleon)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gfortran" ,gfortran)))
