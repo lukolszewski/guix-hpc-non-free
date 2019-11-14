@@ -74,6 +74,7 @@
                                      ":"))
 
                       (define (patch-elf file)
+                        (make-file-writable file)
                         (unless (string-contains file ".so")
                           (format #t "Setting interpreter on '~a'...~%" file)
                           (invoke "patchelf" "--set-interpreter" ld.so
