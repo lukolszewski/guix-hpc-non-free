@@ -5,6 +5,11 @@ stages:
   - update
   - build
 
+# Share the channels/ directory among jobs.
+artifacts:
+  paths:
+    - channels/
+
 ##########################
 # Stage 0: Guix update   #
 ##########################
@@ -18,7 +23,7 @@ update:
 ###########################
 # Stage 1: Build packages #
 ###########################
-build_starpu_cuda:
+starpu_cuda:
   stage: build
   script:
     - channels/guix-hpc/guix build -L . starpu-cuda
