@@ -13,12 +13,14 @@ update:
   script:
     - echo "(cons (channel (name 'guix-hpc) (url \"https://gitlab.inria.fr/guix-hpc/guix-hpc.git\")) %default-channels)" > hpc-channels.scm
     - mkdir -p channels
-    - guix pull -C hpc-channels.scm -p channels/guix-hpc
+    - guix pull -C hpc-channels.scm -p .channels/guix-hpc
 
-  # Share the channels/ directory with subsequent jobs.
+  # Share the .channels/ directory with subsequent jobs.
+  # Note: Call it '.channels' to ensure 'guix build' below won't attempt
+  # to traverse it.
   artifacts:
     paths:
-      - channels/
+      - .channels/
 
 ###########################
 # Stage 1: Build packages #
@@ -26,4 +28,5 @@ update:
 starpu_cuda:
   stage: build
   script:
-    - channels/guix-hpc/bin/guix build -L . starpu-cuda
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . starpu-cuda
