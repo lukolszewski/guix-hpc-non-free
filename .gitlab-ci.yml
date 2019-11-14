@@ -26,4 +26,4 @@ update:
 starpu_cuda:
   stage: build
   script:
-    - channels/guix-hpc/guix build -L . starpu-cuda
+    - channels/guix-hpc/bin/guix build -L . starpu-cuda
