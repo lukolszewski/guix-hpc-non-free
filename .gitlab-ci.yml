@@ -30,3 +30,9 @@ starpu_cuda:
   script:
     - .channels/guix-hpc/bin/guix describe
     - .channels/guix-hpc/bin/guix build -L . starpu-cuda
+
+chameleon_cuda:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . chameleon-cuda
