@@ -25,7 +25,7 @@
 (define-public fmr
   (package
     (name "fmr")
-    (version "55938b987201c89f007eae3cc321597536096c06")
+    (version "0")
     (home-page "https://gitlab.inria.fr/piblanch/fmr")
     (source #f)
     (build-system cmake-build-system)
@@ -35,36 +35,35 @@
 
        ;; FIXME: don't know how to run FMR tests for now
        #:tests? #f))
-    (inputs `(("lapack" ,openblas)
+    (inputs `(("zlib" , zlib)
               ("hdf5" , hdf5)
-              ("zlib" , zlib)
+              ("lapack" ,mkl)
               ("chameleon" ,chameleon)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gfortran" ,gfortran)))
     (synopsis "Fast and accurate Methods for Randomized numerical linear algebra")
     (description
      "This project provides routines for performing low-rank matrix
-approximations based on rando mized techniques.")
+approximations based on randomized techniques.")
     (license license:cecill-c)))
 
 (define-public diodon
   (package
     (name "diodon")
-    (version "55938b987201c89f007eae3cc321597536096c06")
+    (version "0")
     (home-page "https://gitlab.inria.fr/afranc/diodon")
-    (synopsis "Librairies for Multivariate Data Analysis and
-Dimensionality Reduction for very large datasets")
-    (description
-     "Librairies for Multivariate Data Analysis and Dimensionality
-Reduction for very large datasets.")
-    (license license:cecill-c)
     (source #f)
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
                            "-DDIODON_USE_INTERNAL_FMR=OFF"
-                           (string-append "-DFMR_INCLUDE_DIR=" fmr "/include")
+                           ,(string-append "-DCMAKE_PREFIX_PATH="
+                                           (assoc-ref %build-inputs "fmr"))
                            "-DDIODON_USE_CHAMELEON=ON")
+       #:phases (modify-phases %standard-phases
+                               (add-after 'unpack 'chdir
+                                          (lambda _
+                                            (chdir "cpp"))))
 
        ;; FIXME: don't know how to run Diodon tests for now
        #:tests? #f))
@@ -72,6 +71,15 @@ Reduction for very large datasets.")
     ;; FIXME: should use hdf5-parallel-openmpi ?
     (inputs `(("zlib" ,zlib)
               ("hdf5" , hdf5)
-              ("lapack" ,openblas)
+              ("lapack" ,mkl)
               ("chameleon" ,chameleon)
-              ("fmr" ,fmr)))))
+              ("fmr" ,fmr)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gfortran" ,gfortran)))
+
+    (synopsis "Librairies for Multivariate Data Analysis and
+Dimensionality Reduction for very large datasets")
+    (description
+     "Librairies for Multivariate Data Analysis and Dimensionality
+Reduction for very large datasets.")
+    (license license:cecill-c)))
