@@ -22,7 +22,7 @@ visible to the `guix` command-line tools, and assuming you’re using
 Guix >= 0.16.0, create a `~/.config/guix/channels.scm` file with the
 following snippet:
 
-```
+```scheme
 (cons (channel
         (name 'guix-hpc-non-free)
         (url "https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free.git"))
