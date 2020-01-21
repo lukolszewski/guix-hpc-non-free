@@ -68,9 +68,10 @@
                     (passwd:uid owner)
                     (passwd:gid owner))
            (chmod   directory perms))
-         
+
          (let ((user (getpwnam "gitlab-runner"))
                (config-dir "/var/cache/guix/gitlab-runner"))
+           (mkdir-p/perms "/builds" user #o755)
            (mkdir-p/perms config-dir user #o755))))))
 
 (define gitlab-runner-shepherd-service
