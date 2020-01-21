@@ -111,7 +111,7 @@
                                         (string-append "SSL_CERT_DIR="
                                                        certs-dir)
                                         (string-append "GUIX_LOCPATH="
-                                                       #$glibc-utf8-locale
+                                                       #$glibc-utf8-locales
                                                        "/lib/locale"))))
                  (if (register-runner)
                      (fork+exec-command command
