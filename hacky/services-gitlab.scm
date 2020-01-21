@@ -119,7 +119,8 @@
                                         #:group "gitlab-runner"
                                         #:log-file
                                         "/var/log/gitlab-runner.log"
-                                        #:environment environment)
+                                        #:environment-variables
+                                        environment)
                      #f)))))
         (stop #~(make-kill-destructor)))))))
 
