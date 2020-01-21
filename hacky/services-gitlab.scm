@@ -106,7 +106,10 @@
                                     "run" "--config" config-file)))
                  (setenv "SSL_CERT_DIR" certs-dir)
                  (if (register-runner)
-                     (fork+exec-command command)
+                     (fork+exec-command command
+                                        #:user "gitlab-runner"
+                                        #:group "gitlab-runner"
+                                        #:log-file "/var/log/gitlab-runner.log")
                      #f)))))
         (stop #~(make-kill-destructor)))))))
 
