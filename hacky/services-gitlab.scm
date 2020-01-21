@@ -2,7 +2,7 @@
 ;;; of the GNU GPL version 3 or (at your option) any later version.
 ;;;
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 
 (define-module (hacky services-gitlab)
   #:use-module (hacky gitlab)
@@ -11,6 +11,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages certs)
   #:use-module (gnu packages version-control)
   #:use-module (guix gexp)
@@ -103,13 +104,21 @@
                                "--registration-token" #$token))
                      #t))
                (let ((command (list #$(file-append package "/bin/gitlab-runner")
-                                    "run" "--config" config-file)))
-                 (setenv "SSL_CERT_DIR" certs-dir)
+                                    "run" "--config" config-file))
+                     (environment (list "HOME=/builds" ;for 'guix pull'
+                                        "PATH=/run/current-system/profile/bin"
+                                        (string-append "SSL_CERT_DIR="
+                                                       certs-dir)
+                                        (string-append "GUIX_LOCPATH="
+                                                       #$glibc-utf8-locale
+                                                       "/lib/locale"))))
                  (if (register-runner)
                      (fork+exec-command command
                                         #:user "gitlab-runner"
                                         #:group "gitlab-runner"
-                                        #:log-file "/var/log/gitlab-runner.log")
+                                        #:log-file
+                                        "/var/log/gitlab-runner.log"
+                                        #:environment environment)
                      #f)))))
         (stop #~(make-kill-destructor)))))))
 
