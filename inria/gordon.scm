@@ -1,13 +1,14 @@
 ;;; This module extends GNU Guix and is licensed under the same terms, those
 ;;; of the GNU GPL version 3 or (at your option) any later version.
 ;;;
-;;; Copyright © 2018 Inria
+;;; Copyright © 2018, 2020 Inria
 
 (define-module (inria gordon)
   #:use-module (guix)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix git)                         ;for 'git-checkout'
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages compression)
@@ -52,7 +53,8 @@ approximations based on randomized techniques.")
     (name "diodon")
     (version "0")
     (home-page "https://gitlab.inria.fr/afranc/diodon")
-    (source #f)
+    (source (git-checkout (url "git@gitlab.inria.fr:afranc/diodon.git")
+                          (branch "master")))     ;or (commit "1234abc")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
