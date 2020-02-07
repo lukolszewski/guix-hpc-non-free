@@ -29,7 +29,7 @@
     (version "0")
     (home-page "https://gitlab.inria.fr/piblanch/fmr")
     (source (git-checkout (url "git@gitlab.inria.fr:piblanch/fmr.git")
-                          (branch "master")))     ;or (commit "1234abc")
+                          (branch "diodon")))     ;or (commit "1234abc")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
