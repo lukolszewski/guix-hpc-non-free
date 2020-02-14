@@ -1,7 +1,7 @@
 ;;; This module extends GNU Guix and is licensed under the same terms, those
 ;;; of the GNU GPL version 3 or (at your option) any later version.
 ;;;
-;;; Copyright © 2019 Inria
+;;; Copyright © 2019, 2020 Inria
 
 (define-module (inria aerosol)
   #:use-module (guix)
@@ -9,6 +9,7 @@
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
+  #:use-module (guix git)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -17,24 +18,19 @@
   #:use-module (inria pampa))
 
 (define-public aerosol
-  (let ((commit "07dyv1d0q12kg3mk8ial0vc0bbsch0rmfncj44rhiqjfavr4w5xh")
+  (let ((commit "61248eaf8c42e541be1bbd2356ed8e06fc680a37")
         (revision "0"))
     (package
       (name "aerosol")
       (version (git-version "0.0" revision commit))
       (home-page "https://gitlab.inria.fr/aerosol/aerosol")
-      (source (origin
-                ;; XXX: This is private software, so you'll need to clone the
-                ;; Git repo by yourself and then build with
-                ;; '--with-source=/path/to/aerosol'.
-                (method git-fetch)
-                (uri (git-reference
-                      (url (string-append home-page ".git"))
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "07dyv1d0q12kg3mk8ial0vc0bbsch0rmfncj44rhiqjfavr4w5xh"))
-                (file-name (git-file-name name version))))
+
+      ;; This will clone the repository over SSH on the client side, provided
+      ;; you have permissions to do so.
+      (source (git-checkout
+               (url "git@gitlab.inria.fr:aerosol/aerosol.git")
+               (commit commit)))
+
       (build-system cmake-build-system)
       (arguments
        `(#:configure-flags '("-DWITH_TEST=ON")    ;build the test suite
