@@ -22,6 +22,16 @@
   #:use-module (inria tadaam)
   #:use-module (inria hiepacs))
 
+(define-public chameleon+mkl+mt
+  (package
+   (inherit chameleon)
+   (name "chameleon-mkl-mt")
+   (arguments
+    (substitute-keyword-arguments (package-arguments chameleon)
+                                  ((#:configure-flags flags '())
+                                   `(cons "-DBLA_VENDOR=Intel10_64lp" ,flags))))
+   (inputs `(("lapack" ,mkl)
+                        ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
 
 (define-public fmr
   (package
@@ -40,7 +50,7 @@
     (inputs `(("zlib" , zlib)
               ("hdf5" , hdf5)
               ("lapack" ,mkl)
-              ("chameleon" ,chameleon)))
+              ("chameleon" ,chameleon+mkl+mt)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gfortran" ,gfortran)))
     (synopsis "Fast and accurate Methods for Randomized numerical linear algebra")
@@ -60,8 +70,6 @@ approximations based on randomized techniques.")
     (arguments
      '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
                            "-DDIODON_USE_INTERNAL_FMR=OFF"
-                           ,(string-append "-DCMAKE_PREFIX_PATH="
-                                           (assoc-ref %build-inputs "fmr"))
                            "-DDIODON_USE_CHAMELEON=ON")
        #:phases (modify-phases %standard-phases
                                (add-after 'unpack 'chdir
@@ -75,7 +83,7 @@ approximations based on randomized techniques.")
     (inputs `(("zlib" ,zlib)
               ("hdf5" , hdf5)
               ("lapack" ,mkl)
-              ("chameleon" ,chameleon)
+              ("chameleon" ,chameleon+mkl+mt)
               ("fmr" ,fmr)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gfortran" ,gfortran)))
