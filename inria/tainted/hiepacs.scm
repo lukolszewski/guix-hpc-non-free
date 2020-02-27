@@ -52,6 +52,17 @@
    (inputs `(("lapack" ,mkl)
              ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
 
+(define-public chameleon+fxt+mkl+mt
+  (package
+   (inherit chameleon+fxt)
+   (name "chameleon-fxt-mkl-mt")
+   (arguments
+    (substitute-keyword-arguments (package-arguments chameleon+fxt)
+                                  ((#:configure-flags flags '())
+                                   `(cons "-DBLA_VENDOR=Intel10_64lp" ,flags))))
+   (inputs `(("lapack" ,mkl)
+             ,@(delete `("lapack" ,openblas) (package-inputs chameleon+fxt))))))
+
 (define-public fmr
   (package
     (name "fmr")
