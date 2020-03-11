@@ -85,7 +85,8 @@ approximations based on randomized techniques.")
      (substitute-keyword-arguments (package-arguments fmr)
                                    ((#:configure-flags flags '())
                                     `(cons "-DFMR_USE_CHAMELEON=ON" ,flags))))
-    (inputs `(("chameleon" ,chameleon+mkl+mt)))))
+    (inputs `(("chameleon" ,chameleon+mkl+mt)
+              ,@(package-inputs fmr)))))
 
 (define-public diodon
   (package
