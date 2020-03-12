@@ -36,3 +36,9 @@ chameleon_cuda:
   script:
     - .channels/guix-hpc/bin/guix describe
     - .channels/guix-hpc/bin/guix build -L . chameleon-cuda
+
+chameleon_mkl_mt:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . chameleon-mkl-mt
