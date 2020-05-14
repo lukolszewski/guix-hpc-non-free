@@ -222,7 +222,8 @@ EXTRALIB   := $(EXTRALIB) -L$(HWLOC_LIB) -lhwloc
 
 # Uncomment following lines for marcel thread support
 #VERSIONSMP := $(VERSIONSMP)_marcel
-#CCPASTIX   := $(CCPASTIX) `pm2-config --cflags` -I${PM2_ROOT}/marcel/include/pthread
+#CCPASTIX   := $(CCPASTIX) `pm2-config --cflags`
+#CCPASTIX   += -I${PM2_ROOT}/marcel/include/pthread
 #EXTRALIB   := $(EXTRALIB) `pm2-config --libs`
 # ---- Thread Posix ------
 EXTRALIB   := $(EXTRALIB) -lpthread
@@ -244,10 +245,8 @@ EXTRALIB   := $(EXTRALIB) -lpthread
 #---- Gotoblas ----
 #BLASLIB  = -L${BLAS_HOME} -lgoto
 #----  MKL     ----
-#Uncomment the correct line
 BLASLIB  = -L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64
-BLASLIB += -lmkl_sequential -lmkl_core -lpthread -lm -ldl
-#BLASLIB  = -L$(BLAS_HOME) -lmkl_intel -lmkl_sequential -lmkl_core
+BLASLIB += -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl
 #----  Acml    ----
 #BLASLIB  = -L$(BLAS_HOME) -lacml
 
@@ -282,4 +281,6 @@ FFLAGS   = $(CCFOPT)
 LDFLAGS  = $(EXTRALIB) $(BLASLIB)
 CTAGS    = $(CTAGSPROG)
 "
-                                   ))) #t))))))))
+                                           ))) #t))))))
+   (synopsis "Sparse matrix direct solver (using Intel® MKL instead of
+OpenBLAS)")))
