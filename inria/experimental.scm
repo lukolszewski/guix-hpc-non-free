@@ -24,13 +24,14 @@
 (define-public qr_mumps
   (package
     (name "qr_mumps")
-    (version "2.0")
+    (version "49307f6b10af35de6bf3ee51dc644dc21069c74f")
     (home-page "http://buttari.perso.enseeiht.fr/qr_mumps/")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url home-page)
-                    (commit (string-append "v" version))
+                    (url "https://gitlab.com/qr_mumps/qr_mumps/")
+                    (commit version)
+		    ;; (commit (string-append "v" version))
                     ;; We do not need using submodule for the moment
                     ;; (recursive? #t)
                     ))
@@ -46,6 +47,7 @@
                            "-DQRM_WITH_STARPU=ON"
                            "-DQRM_ORDERING_SCOTCH=ON"
                            "-DQRM_ORDERING_METIS=ON"
+			   "-DQRM_WITH_MPI=ON"
                            ;; "-DQRM_WITH_CUDA=OFF"
                            ;; "-DARITH=d"
                            ;; "-DCMAKE_BUILD_TYPE=Release"
@@ -53,29 +55,33 @@
 
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'prepare-test-environment
-                    (lambda _
-                      ;; StarPU expects $HOME to be writable.
-                      (setenv "HOME" (getcwd))
-                      )))
+			      (lambda _
+				;; StarPU expects $HOME to be writable.
+				(setenv "HOME" (getcwd))
+				))
+		  (add-before 'check 'prepare-test-environment
+			      (lambda _
+				(setenv "OMPI_MCA_rmaps_base_oversubscribe" "1") #t)))
 
        ;; No make test rule yet
        #:tests? #f))
 
      ;; TODO: refine which package shall be native, propagated, or regular input
-     (native-inputs `(("gforgran" ,gfortran)
+     (native-inputs `(("gfortran" ,gfortran)
                       ("pkg-config" ,pkg-config)))
      (inputs `(("openblas" ,openblas)
-               ("ssh" ,openssh)
                ("perl" ,perl)
                ;; ("scotch" ,pt-scotch)
                ("scotch" ,scotch)
                ("hwloc" ,hwloc "lib")
+	       ("openmpi" ,openmpi)
+	       ("ssh" ,openssh)
                ("metis" ,metis)
                ("starpu" ,starpu)))
     (propagated-inputs `(("hwloc" ,hwloc "lib")
                          ;; ("scotch" ,scotch)
                          ))
-    (synopsis "Sparse QR direct solver (experimental package)")
+    (synopsis "Sparse QR direct solver (experimental package for distributed memroy version)")
     (description
      "qr_mumps is a software package for the solution of sparse, linear systems
 on multicore computers based on the QR factorization of the input matrix.
