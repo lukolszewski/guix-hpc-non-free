@@ -24,7 +24,7 @@
 (define-public qr_mumps
   (package
     (name "qr_mumps")
-    (version "49307f6b10af35de6bf3ee51dc644dc21069c74f")
+    (version "a3027b41545bd419dbbcda0ca86c66359e05f6b5")
     (home-page "http://buttari.perso.enseeiht.fr/qr_mumps/")
     (source (origin
               (method git-fetch)
@@ -38,7 +38,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vsksr1n2wa1xabdfc0c7l5w78jxsy4bzf02s8d8sy3rjr2l9zy2"))))
+                "1gzz2kzgwcc4ljdhlxnphwymhgb04nq5f125cirn651ad8lwk4l7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '(
@@ -49,8 +49,8 @@
                            "-DQRM_ORDERING_METIS=ON"
 			   "-DQRM_WITH_MPI=ON"
                            ;; "-DQRM_WITH_CUDA=OFF"
-                           ;; "-DARITH=d"
-                           ;; "-DCMAKE_BUILD_TYPE=Release"
+                           "-DARITH=d"
+                           "-DCMAKE_BUILD_TYPE=Release"
                            )
 
        #:phases (modify-phases %standard-phases
@@ -90,5 +90,5 @@ computing the minimum-norm solution of sparse, underdetermined problems. It can
 obviously be used for solving square problems in which case the stability
 provided by the use of orthogonal transformations comes at the cost of a higher
 operation count with respect to solvers based on, e.g., the LU factorization.
-qr_mumps supports real and complex, single or double precision arithmetic." )
+qr_mumps supports real and complex, single or double precision arithmetic. This is an experimental version of the package for distributed memory and limited to double precision." )
     (license license:cecill)))
