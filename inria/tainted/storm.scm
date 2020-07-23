@@ -4,23 +4,47 @@
 ;;; Note that this module provides packages that depend on "non-free"
 ;;; software, which denies users the ability to study and modify it.
 ;;;
-;;; Copyright © 2018, 2019 Inria
+;;; Copyright © 2018, 2019, 2020 Inria
 
 (define-module (inria tainted storm)
   #:use-module (guix)
   #:use-module (gnu packages gcc)
   #:use-module (inria storm)
-  #:use-module (non-free cuda))
+  #:use-module (non-free cuda)
+
+  #:use-module (guix build-system)
+  #:use-module (guix build-system gnu)
+  #:use-module (ice-9 match))
+
+(define (gnu-build-system-with-compiler compiler)
+  "Return a variant of GNU-BUILD-SYSTEM that uses COMPILER instead of the
+implicit GCC."
+  (define lower
+    (build-system-lower gnu-build-system))
+
+  (define (lower* . args)
+    (let ((lowered (apply lower args)))
+      (bag
+        (inherit lowered)
+        (build-inputs (map (match-lambda
+                             (("gcc" _ rest ...)
+                              `("compiler" ,compiler ,@rest))
+                             (input input))
+                           (bag-build-inputs lowered))))))
+
+  (build-system
+    (inherit gnu-build-system)
+    (lower lower*)))
 
 (define-public starpu+cuda
   (package
     (inherit starpu)
     (name "starpu-cuda")
+    ;; "host_config.h" in 'cuda-toolkit' says "gcc versions later than 5 are
+    ;; not supported".  Thus, provide GCC 5.x.
+    (build-system (gnu-build-system-with-compiler gcc-5))
     (native-inputs
-     ;; "host_config.h" in 'cuda-toolkit' says "gcc versions later than 5 are
-     ;; not supported".  Thus, provide GCC 5.x.
-     `(("gcc-5" ,gcc-5)
-       ("no-float128" ,no-float128)
+     `(("no-float128" ,no-float128)
        ,@(package-native-inputs starpu)))
     (inputs
      `(("cuda" ,cuda)
