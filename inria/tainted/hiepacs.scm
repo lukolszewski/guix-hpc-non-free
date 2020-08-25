@@ -86,6 +86,7 @@ approximations based on randomized techniques.")
                                    ((#:configure-flags flags '())
                                     `(cons "-DFMR_USE_CHAMELEON=ON" ,flags))))
     (inputs `(("chameleon" ,chameleon+mkl+mt)
+              ("hdf5" ,hdf5-parallel-openmpi)
               ,@(package-inputs fmr)))))
 
 (define-public diodon
@@ -131,4 +132,5 @@ Reduction for very large datasets.")
                                     `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
     (inputs `(("chameleon" ,chameleon+mkl+mt)
               ("fmr" ,fmr+mpi)
+              ("hdf5" ,hdf5-parallel-openmpi)
               ,@(delete `("fmr" ,fmr) (package-inputs diodon))))))
