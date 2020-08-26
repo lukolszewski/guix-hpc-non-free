@@ -73,14 +73,10 @@
                ("perl" ,perl)
                ;; ("scotch" ,pt-scotch)
                ("scotch" ,scotch)
-               ("hwloc" ,hwloc "lib")
-	       ("openmpi" ,openmpi)
 	       ("ssh" ,openssh)
                ("metis" ,metis)
                ("starpu" ,starpu)))
-    (propagated-inputs `(("hwloc" ,hwloc "lib")
-                         ;; ("scotch" ,scotch)
-                         ))
+     (propagated-inputs `(("starpu" ,starpu)))
     (synopsis "Sparse QR direct solver (experimental package for distributed memroy version)")
     (description
      "qr_mumps is a software package for the solution of sparse, linear systems
