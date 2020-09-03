@@ -15,12 +15,10 @@ invite you not to share it widely.
 
 ## How does it work?
 
-The package recipes in this repo _extend_ [those that come with
-Guix](https://gnu.org/s/guix/packages) and
-[Guix-HPC](https://gitlab.inria.fr/guix-hpc/guix-hpc).  To make them
-visible to the `guix` command-line tools, and assuming you’re using
-Guix >= 0.16.0, create a `~/.config/guix/channels.scm` file with the
-following snippet:
+The package definitions in this repo _extend_ [those that come with
+Guix](https://hpc.guix.info/browse).  To make them visible to the
+`guix` command-line tools, create the `~/.config/guix/channels.scm` file
+with the following snippet to request the `guix-hpc` _channel_:
 
 ```scheme
 (cons (channel
@@ -30,7 +28,7 @@ following snippet:
 ```
 
 That way, `guix pull` will systematically pull not only Guix, but also
-Guix-HPC.
+Guix-HPC-non-free and Guix-HPC.
 
 See [Guix-HPC](https://gitlab.inria.fr/guix-hpc/guix-hpc), for more
 information.
