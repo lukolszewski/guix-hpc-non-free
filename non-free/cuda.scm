@@ -210,7 +210,7 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
 
 (define-public cuda
   ;; Default version.
-  cuda-8.0)
+  cuda-11.0)
 
 (define-public no-float128
   ;; FIXME: We cannot simply add it to 'propagated-inputs' of cuda-toolkit
