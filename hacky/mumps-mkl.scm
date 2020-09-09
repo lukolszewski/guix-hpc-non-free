@@ -7,6 +7,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (srfi srfi-1)
   #:use-module (non-free mkl))
@@ -17,6 +18,7 @@
    (name "mumps-mkl")
    (inputs
     `(("blas" ,mkl)
+      ("libomp" ,libomp)
       ,@(alist-delete "openblas" (package-inputs mumps))))
    (arguments
     (substitute-keyword-arguments
@@ -55,11 +57,13 @@ SCALAP      += -lscalapack~]
 LIBOTHERS    = -pthread
 CDEFS        = -DAdd_
 PIC          = -fPIC
-OPTF         = -O2 -DALLOW_NON_INIT $(PIC)
-OPTL         = -O2 $(PIC)
+OPTF         = -O2 -DALLOW_NON_INIT -DBLR_MT -fopenmp $(PIC)
+OPTL         = -O2 -fopenmp $(PIC)
 OPTC         = -O2 $(PIC)
 INCS         = $(INCSEQ)
-LIBS         = $(SCALAP) $(LIBSEQ)
+OMPDIR       = ~a
+LIBOMP       = -L$(OMPDIR)/lib -lgomp
+LIBS         = $(SCALAP) $(LIBSEQ) $(LIBOMP)
 LPORDDIR     = $(topdir)/PORD/lib
 IPORD        = -I$(topdir)/PORD/include
 LPORD        = $(LPORDDIR)/libpord.a
@@ -74,12 +78,13 @@ LSCOTCH      = -Wl,-rpath $(SCOTCHDIR)/lib -L$(SCOTCHDIR)/lib ~a-lesmumps
 LSCOTCH     += -lscotch -lscotcherr
 ORDERINGSF  += ~a~}~]
 ORDERINGSC   = $(ORDERINGSF)
-LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH) $(LIBSEQ)
-IORDERINGSF  = $(ISCOTCH)
-IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
+LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH) $(LIBSEQ) $(LIBOMP)
+IORDERINGSF  = $(ISCOTCH) $(LIBOMP)
+IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH) $(LIBOMP)"
                         (assoc-ref inputs "mpi")
                         (assoc-ref inputs "blas")
                         (assoc-ref inputs "scalapack")
+                        (assoc-ref inputs "libomp")
                         (assoc-ref inputs "metis")
                         (match (list (assoc-ref inputs "pt-scotch")
                                      (assoc-ref inputs "scotch"))
@@ -91,8 +96,8 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                            `((,ptscotch
                               "-lptesmumps -lptscotch -lptscotcherr "
                               "-Dptscotch")))))))))))))
-   (synopsis "Multifrontal sparse direct solver (using Intel® MKL instead of
-OpenBLAS)")))
+   (synopsis "Multifrontal sparse direct solver (compiled with OpenMP
+directives-based multi-threading support and Intel® MKL instead of OpenBLAS)")))
 
 (define-public mumps-mkl-metis
   (package
@@ -121,8 +126,8 @@ OpenBLAS)")))
                                (lambda _
                                  ((assoc-ref ,phases 'check)
                                   #:exec-prefix '("mpirun" "-n" "2"))))))))
-   (synopsis "Multifrontal sparse direct solver (using Intel® MKL instead of
-OpenBLAS and MPI)")))
+   (synopsis "Multifrontal sparse direct solver (compiled with combined MPI and
+OpenMP multi-threading support and Intel® MKL instead of OpenBLAS)")))
 
 (define-public mumps-mkl-metis-openmpi
   (package
