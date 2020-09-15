@@ -37,7 +37,8 @@
                                                           ;; Set the test environment for Open MPI.
                                                           ,%openmpi-setup))
 
-                       #:tests? #f))                            ;FIXME
+                       #:tests? #f
+                       #:build-type "Release"))                            ;FIXME
                    (native-inputs
                      `(("gfortran" ,gfortran)))
                    (inputs
