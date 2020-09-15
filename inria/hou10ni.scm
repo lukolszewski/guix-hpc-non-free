@@ -15,7 +15,10 @@
                #:use-module (gnu packages maths)
                #:use-module (inria hiepacs)
                #:use-module (inria storm)
-               #:use-module (gnu packages mpi))
+               #:use-module (gnu packages linux)
+               #:use-module (gnu packages ssh)
+               #:use-module (gnu packages mpi)
+               #:use-module (gnu packages fabric-management))
 (define-public hou10ni
                (let ((commit "f12d26f704e6be0b17c2e144021eef4edba6dc1d")
                      (revision "0"))
@@ -52,6 +55,7 @@
                        ("pt-scotch" ,pt-scotch)
                        ("scotch" ,scotch)
                        ("openmpi" ,openmpi)
+                       ("openssh" ,openssh)
                        ("arb" ,arb)))
                    (synopsis "Hou10ni")
                    (description
