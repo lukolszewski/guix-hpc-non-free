@@ -126,6 +126,8 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
     (supported-systems '("x86_64-linux"))))
 
 (define-syntax-rule (cuda-source url hash)
+  ;; Visit
+  ;; <https://developer.nvidia.com/cuda-10.2-download-archive?target_os=Linux&target_arch=x86_64&target_distro=Fedora&target_version=29&target_type=runfilelocal> or similar to get the actual URL.
   (origin
     (uri url)
     (sha256 (base32 hash))
@@ -207,6 +209,32 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
     (native-inputs
      `(("which" ,which)
        ,@(package-native-inputs cuda-8.0)))))
+
+(define-public cuda-10.2
+  (package
+    (inherit cuda-11.0)
+    (version "10.2.89")
+    (source
+     (cuda-source
+      "https://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run"
+      "04fasl9sjkb1jvchvqgaqxprnprcz7a8r52249zp2ijarzyhf3an"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments cuda-11.0)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; This phase doesn't work as is for 10.2.
+           (delete 'remove-superfluous-stuff)
+
+           (add-after 'install 'really-install-libdevice
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; XXX: The 'install' phase of CUDA 11.0 looks for libdevice
+               ;; in a location that's different from that of libdevice in
+               ;; CUDA 10.  Copy it from the right place here.
+               (let ((out (assoc-ref outputs "out")))
+                 ;; 'cicc' needs that directory.
+                 (copy-recursively "builds/cuda-toolkit/nvvm/libdevice/"
+                                   (string-append out "/nvvm/libdevice"))
+                 #t)))))))))
 
 (define-public cuda
   ;; Default version.
