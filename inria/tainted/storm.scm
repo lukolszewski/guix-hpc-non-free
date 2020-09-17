@@ -77,6 +77,7 @@ implicit GCC."
      (substitute-keyword-arguments (package-arguments starpu)
        ((#:configure-flags flags '())
         `(append (list "--enable-cuda"
+                       "--disable-opencl"
                        (string-append "--with-cuda-dir="
                                       (assoc-ref %build-inputs "cuda"))
                        (string-append "--with-cuda-lib-dir="
