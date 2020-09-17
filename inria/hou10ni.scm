@@ -45,7 +45,7 @@
                    (native-inputs
                      `(("gfortran" ,gfortran)))
                    (inputs
-                     `(("mumps" ,mumps)
+                     `(("mumps-openmpi" ,mumps-openmpi)
                        ("metis" ,metis)
                        ("openblas" ,openblas)
                        ("maphys", maphys)
