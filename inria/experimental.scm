@@ -72,7 +72,7 @@
      (inputs `(("openblas" ,openblas)
                ("perl" ,perl)
                ;; ("scotch" ,pt-scotch)
-               ("scotch" ,scotch)
+               ("scotch32" ,scotch32)
 	       ("ssh" ,openssh)
                ("metis" ,metis)
                ("starpu" ,starpu)))
