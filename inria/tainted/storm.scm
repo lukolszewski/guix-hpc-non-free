@@ -67,12 +67,8 @@ implicit GCC."
   (package
     (inherit starpu)
     (name "starpu-cuda")
-    ;; "host_config.h" in 'cuda-toolkit' says "gcc versions later than 5 are
-    ;; not supported".  Thus, provide GCC 5.x.
-    (build-system (gnu-build-system-with-compiler gcc-5))
     (native-inputs
-     `(("no-float128" ,no-float128)
-       ("gfortran" ,gfortran-sans-libstdc++)
+     `(("gfortran" ,gfortran-sans-libstdc++)
        ,@(alist-delete "gfortran" (package-native-inputs starpu))))
     (inputs
      `(("cuda" ,cuda)
@@ -81,6 +77,7 @@ implicit GCC."
      (substitute-keyword-arguments (package-arguments starpu)
        ((#:configure-flags flags '())
         `(append (list "--enable-cuda"
+                       "--disable-opencl"
                        (string-append "--with-cuda-dir="
                                       (assoc-ref %build-inputs "cuda"))
                        (string-append "--with-cuda-lib-dir="

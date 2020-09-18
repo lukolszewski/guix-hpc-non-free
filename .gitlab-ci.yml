@@ -42,3 +42,33 @@ chameleon_mkl_mt:
   script:
     - .channels/guix-hpc/bin/guix describe
     - .channels/guix-hpc/bin/guix build -L . chameleon-mkl-mt
+    
+mumps_mkl:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . mumps-mkl
+
+mumps_mkl_metis:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . mumps-mkl-metis
+
+mumps_mkl_openmpi:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . mumps-mkl-openmpi
+
+mumps_mkl_metis_openmpi:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . mumps-mkl-metis-openmpi
+
+pastix_5_mkl:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . pastix-5-mkl

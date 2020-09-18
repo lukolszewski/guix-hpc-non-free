@@ -3,7 +3,7 @@
 ;;;
 ;;; Copyright © 2020 Inria
 
-(define-module (hacky pastix-mkl)
+(define-module (hacky pastix-5-mkl)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
@@ -24,7 +24,7 @@
       (#:phases phases)
       `(modify-phases ,phases
                       (replace 'configure
-                               (lambda _
+                               (lambda* (#:key inputs #:allow-other-keys)
                                (call-with-output-file "config.in"
                                  (lambda (port)
                                    (format port "
@@ -33,12 +33,12 @@ VERSIONBIT  = _32bit
 EXEEXT      =
 OBJEXT      = .o
 LIBEXT      = .a
-CCPROG      = gcc -Wall
-CFPROG      = gfortran
-CF90PROG    = gfortran -ffree-form
-CXXPROG     = g++
+CCPROG      = gcc -Wall -g
+CFPROG      = gfortran -g
+CF90PROG    = gfortran -ffree-form -g
+CXXPROG     = g++ -g
 
-MCFPROG     = mpif90
+MCFPROG     = mpif90 -g
 CF90CCPOPT  = -ffree-form -x f95-cpp-input
 # Compilation options for optimization (make expor)
 CCFOPT      = -O3
@@ -136,7 +136,7 @@ CCTYPESFLT := $(CCTYPESFLT) -DTYPE_COMPLEX
 
 # Uncomment the following line if your MPI doesn't support MPI_THREAD_MULTIPLE,
 # level then use IPARM_THREAD_COMM_MODE
-CCPASTIX   := $(CCPASTIX) -DPASTIX_FUNNELED
+#CCPASTIX   := $(CCPASTIX) -DPASTIX_FUNNELED
 
 # Uncomment the following line if your MPI doesn't support MPI_Datatype
 # correctly
@@ -172,7 +172,7 @@ NVCCOPT    := $(NVCCOPT) -arch sm_20
 CCPASTIX   := $(CCPASTIX) -DMEMORY_USAGE
 
 # Show memory usage statistics in solver
-CCPASTIX   := $(CCPASTIX) -DSTATS_SOPALIN
+#CCPASTIX   := $(CCPASTIX) -DSTATS_SOPALIN
 
 # Uncomment following line for dynamic thread scheduling support
 #CCPASTIX   := $(CCPASTIX) -DPASTIX_DYNSCHED
@@ -191,9 +191,9 @@ CCPASTIX   := $(CCPASTIX) -DSTATS_SOPALIN
 #EXTRALIB   := $(EXTRALIB) -L$(METIS_HOME) -lmetis
 
 # Scotch always needed to compile
-SCOTCH_HOME ?= ${HOME}/scotch_5.1/
-SCOTCH_INC ?= $(SCOTCH_HOME)/include
-SCOTCH_LIB ?= $(SCOTCH_HOME)/lib
+SCOTCH_HOME  = ~a
+SCOTCH_INC  ?= $(SCOTCH_HOME)/include
+SCOTCH_LIB  ?= $(SCOTCH_HOME)/lib
 # Uncomment on of this blocks
 #scotch
 CCPASTIX   := $(CCPASTIX) -I$(SCOTCH_INC) -DWITH_SCOTCH
@@ -210,7 +210,7 @@ EXTRALIB   := $(EXTRALIB) -L$(SCOTCH_LIB) -lscotch -lscotcherrexit
 ###################################################################
 # By default PaStiX uses hwloc to bind threads,
 # comment this lines if you don't want it (not recommended)
-HWLOC_HOME ?= /opt/hwloc/
+HWLOC_HOME  = ~a
 HWLOC_INC  ?= $(HWLOC_HOME)/include
 HWLOC_LIB  ?= $(HWLOC_HOME)/lib
 CCPASTIX   := $(CCPASTIX) -I$(HWLOC_INC) -DWITH_HWLOC
@@ -245,8 +245,8 @@ EXTRALIB   := $(EXTRALIB) -lpthread
 #---- Gotoblas ----
 #BLASLIB  = -L${BLAS_HOME} -lgoto
 #----  MKL     ----
-BLASLIB  = -L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_intel_lp64
-BLASLIB += -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl
+BLASLIB  = -L~a/lib -Wl,--no-as-needed -lmkl_intel_lp64 -lmkl_gnu_thread
+BLASLIB += -lmkl_core -lgomp -lpthread -lm -ldl
 #----  Acml    ----
 #BLASLIB  = -L$(BLAS_HOME) -lacml
 
@@ -281,6 +281,9 @@ FFLAGS   = $(CCFOPT)
 LDFLAGS  = $(EXTRALIB) $(BLASLIB)
 CTAGS    = $(CTAGSPROG)
 "
+                                           (assoc-ref inputs "scotch32")
+                                           (assoc-ref inputs "hwloc")
+                                           (assoc-ref inputs "mkl")
                                            ))) #t))))))
    (synopsis "Sparse matrix direct solver (using Intel® MKL instead of
 OpenBLAS)")))
