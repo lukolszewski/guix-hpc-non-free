@@ -18,6 +18,8 @@
   #:use-module (inria hiepacs)
   #:use-module (inria storm)
   #:use-module (inria tadaam)
+  #:use-module (non-free cuda)
+  #:use-module (inria tainted storm)
   #:use-module (guix utils)
   )
 
@@ -88,3 +90,17 @@ provided by the use of orthogonal transformations comes at the cost of a higher
 operation count with respect to solvers based on, e.g., the LU factorization.
 qr_mumps supports real and complex, single or double precision arithmetic. This is an experimental version of the package for distributed memory and limited to double precision." )
     (license license:cecill)))
+
+(define-public qr_mumps+cuda
+  (package
+    (inherit qr_mumps)
+    (name "qr_mumps-cuda")
+    (arguments
+     (substitute-keyword-arguments (package-arguments qr_mumps)
+                                   ((#:configure-flags flags '())
+                                    `(cons "-DQRM_WITH_CUDA=ON" ,flags))))
+    (inputs
+     `(("cuda" ,cuda)
+       ,@(package-inputs chameleon)))
+    (propagated-inputs `(("starpu" ,starpu+cuda)
+                         ,@(delete `("starpu" ,starpu) (package-inputs qr_mumps))))))
