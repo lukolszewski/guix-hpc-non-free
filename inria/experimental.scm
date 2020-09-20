@@ -15,6 +15,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages wget)
   #:use-module (inria hiepacs)
   #:use-module (inria storm)
   #:use-module (inria tadaam)
