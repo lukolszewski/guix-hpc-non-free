@@ -44,9 +44,13 @@
               "1gzz2kzgwcc4ljdhlxnphwymhgb04nq5f125cirn651ad8lwk4l7"))))
    (build-system cmake-build-system)
    (arguments
-    '(#:configure-flags '(
+    '(#:configure-flags  (list
                           "-Wno-dev"
-                          ;; "-DBUILD_SHARED_LIBS=ON"
+                          "-DBUILD_SHARED_LIBS=ON"
+                          (string-append "-DCMAKE_EXE_LINKER_FLAGS="
+                                         "-Wl,-rpath="
+                                         (assoc-ref %outputs "out")
+                                         "/lib")
                           "-DQRM_WITH_STARPU=ON"
                           "-DQRM_ORDERING_SCOTCH=ON"
                           "-DQRM_ORDERING_METIS=ON"
