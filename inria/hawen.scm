@@ -37,7 +37,12 @@
           #:parallel-build? #f 
           #:phases 
            (modify-phases %standard-phases
-               (add-after 'build 'mpi-setup
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (bin (string-append out "/bin")))
+                        (install-file "../bin/forward_helmholtz_acoustic-iso_hdg.out" bin))))
+             (add-after 'build 'mpi-setup
                           ,%openmpi-setup)
                 ;; go into code subdirectory,  yes I know it is verbose 
                 ;; only for  a "cd" command 😀
