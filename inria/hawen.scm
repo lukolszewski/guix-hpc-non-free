@@ -19,11 +19,19 @@
                #:use-module (gnu packages ssh)
                #:use-module (gnu packages mpi)
                #:use-module (gnu packages fabric-management))
-(define-public hawen
+
+
+
+
+
+
+
+; here we define to select whichj
+(define (make-hawen problem direction)
   (let ((commit "c58553648a3ce0b99d5dbd41129e3d4d6418d0ce")
         (revision "0"))
     (package
-      (name "hawen")
+      (name (string-append "hawen " "-" problem "-" direction))
       (version "0.5")
       (home-page "git@gitlab.inria.fr:ffaucher/hawen_work.git")
 
@@ -60,6 +68,7 @@
                            (in_arb (assoc-ref inputs "arb"))
                            (in_arpack (assoc-ref inputs "arpack-ng-openmpi"))
                            )
+                      ; write the make.version_config file
                       (call-with-output-file "config/make.version_config"
                         (lambda (port)
                           (format port "
@@ -84,6 +93,30 @@ LPARPACK  = -L~a/lib -lparpack
           in_arpack in_arpack
                           ) 
                         ) 
+                      )
+                      (call-with-output-file "config/make.version"
+                        (lambda (port)
+                          (format port "
+ROOT_DIR         :=$(shell pwd)
+MAKE_CONFIG_FILE :=$(ROOT_DIR)/config/make.version_config
+BINARY_DIR       :=$(ROOT_DIR)/../bin
+LIBRARY_DIR      :=$(ROOT_DIR)/../library
+DEBUG            :=0
+OPTIMIZATION     :=1
+## parallelism can only be mpi for now
+PARALLELISM    := mpi
+PROBLEM        := ~a
+DISCRETIZATION := hdg
+PROPAGATOR     := ~a
+# MUMPS_LATEST MUST BE SET TO 0 IF THE VERSION OF MUMPS IS < 5.3.3
+MUMPS_LATEST=0
+# ARB, ARPACK AND PARPACK DEPENDENCIES
+DEPENDENCY_ARB=1
+DEPENDENCY_ARPACK=1
+DEPENDENCY_PARPACK=1
+"          direction problem
+                          ) 
+                        ) 
                       ) 
                     ) 
                   ) 
@@ -106,3 +139,15 @@ LPARPACK  = -L~a/lib -lparpack
       (synopsis "Hawen")
       (description "Hawen is a DG wave propagation simulating library for solving inverse problems ")
       (license #f ))))
+(define-public hawen-helmholtz_elastic-iso-inversion
+ (make-hawen "helmholtz_elastic-iso" "inversion"))
+
+(define-public hawen-elastic-forward
+ (make-hawen "helmholtz_elastic-iso" "forward"))
+
+(define-public hawen-acoustic-inversion
+ (make-hawen "helmholtz_acoustic-iso" "inversion"))
+
+(define-public hawen-acoustic-forward
+ (make-hawen "helmholtz_acoustic-iso" "forward"))
+
