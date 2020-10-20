@@ -5,7 +5,7 @@
 
 (define-module (inria hawen)
                #:use-module (guix)
-               #:use-module (guix git)                         ;for 'git-checkout'
+               #:use-module (guix git)
                #:use-module (guix git-download)
                #:use-module (guix build-system gnu)
                #:use-module ((guix licenses) #:prefix license:)
@@ -22,7 +22,6 @@
 
 
 
-; here we define to select whichj
 (define (make-hawen problem direction)
   (let ((commit "c58553648a3ce0b99d5dbd41129e3d4d6418d0ce")
         (revision "0")
@@ -30,7 +29,7 @@
     (package
       (name (string-append "hawen" "-" problem "-" direction))
       (version "0.5")
-      (home-page "git@gitlab.inria.fr:ffaucher/hawen_work.git")
+      (home-page "https://ffaucher.gitlab.io/hawen-website/")
 
       (source (git-checkout
               (url "git@gitlab.inria.fr:ffaucher/hawen_work.git")
@@ -39,34 +38,31 @@
       (build-system gnu-build-system)
       (arguments
         `(#:tests? #f
-          #:parallel-build? #f 
-          #:phases 
+          #:parallel-build? #f
+          #:phases
            (modify-phases %standard-phases
              (replace 'install
-               (lambda* (#:key outputs problem direction #:allow-other-keys)
+               (lambda* (#:key outputs #:allow-other-keys)
                  (let* ((out (assoc-ref outputs "out"))
                         (bin (string-append out "/bin")))
-                        (install-file (string-append "../bin/" direction "_helmholtz_" acoustic "-iso_hdg.out") bin))))
-             (add-after 'build 'mpi-setup
-                          ,%openmpi-setup)
-                ;; go into code subdirectory,  yes I know it is verbose 
-                ;; only for  a "cd" command 😀
+                        (install-file
+                          (string-append "../bin/" ,direction "_helmholtz_"
+                                                   ,problem "-iso_hdg.out") bin))))
+                ;; go into code subdirectory
                 (add-after
                   'unpack 'chdir-to-src
                   (lambda _ (chdir "code") #t))
                 ;; we replace the phase configure by writing
                 ;; in the make.version_config file
                 (replace
-                  'configure 
-                  (lambda* (#:key outputs inputs direction problem #:allow-other-keys)  
+                  'configure
+                  (lambda* (#:key outputs inputs #:allow-other-keys)
                     (let* ((in_metis (assoc-ref inputs "metis")) ; FIXME : factorize!!!
                            (in_scotch (assoc-ref inputs "scotch"))
                            (in_mumps (assoc-ref inputs "mumps-openmpi"))
                            (in_arb (assoc-ref inputs "arb"))
-                           (in_arpack (assoc-ref inputs "arpack-ng-openmpi"))
-                           )
+                           (in_arpack (assoc-ref inputs "arpack-ng-openmpi")))
                       ; write the make.version_config file
-                      (display "coucou" direction)
                       (call-with-output-file "config/make.version_config"
                         (lambda (port)
                           (format port "
@@ -84,14 +80,11 @@ LARB      = -L~a/lib -larb
 IARB      = -I~a/include
 ARPACK    = -L~a/lib -larpack
 LPARPACK  = -L~a/lib -lparpack
-"         in_metis in_metis 
-          in_scotch in_scotch 
+"         in_metis in_metis
+          in_scotch in_scotch
           in_mumps in_mumps in_mumps
           in_arb in_arb
-          in_arpack in_arpack
-                          ) 
-                        ) 
-                      )
+          in_arpack in_arpack)))
                       (chmod "config/make.version" #o755) ; make.version is not writable
                       (call-with-output-file "config/make.version"
                         (lambda (port)
@@ -112,16 +105,7 @@ MUMPS_LATEST=0
 DEPENDENCY_ARB=1
 DEPENDENCY_ARPACK=1
 DEPENDENCY_PARPACK=1
-"          direction problem
-                          ) 
-                        ) 
-                      ) 
-                    ) 
-                  ) 
-                ) 
-              )
-            )
-          )
+"          ,direction ,problem)))))))))
       (native-inputs
         `(("gfortran" ,gfortran)))
       (inputs
@@ -135,12 +119,13 @@ DEPENDENCY_PARPACK=1
           ("openmpi" ,openmpi)
           ("arb" ,arb)))
       (synopsis "Hawen")
-      (description "Hawen is a DG wave propagation simulating library for solving inverse problems")
-      (license #f ))))
+      (description
+        "Hawen is a DG wave propagation simulating library for
+        solving inverse problems. it is developed by F. Faucher  ")
+      (license #f))))
 
 ; todo  : replace the combinatorial enumeration by a loop
 (define-public hawen-elastic-inversion (make-hawen "elastic" "inversion"))
 (define-public hawen-acoustic-inversion (make-hawen "acoustic" "inversion"))
 (define-public hawen-acoustic-forward (make-hawen "acoustic" "forward"))
 (define-public hawen-elastic-forward (make-hawen "elastic" "forward"))
-
