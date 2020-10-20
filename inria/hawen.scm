@@ -22,16 +22,13 @@
 
 
 
-
-
-
-
 ; here we define to select whichj
 (define (make-hawen problem direction)
   (let ((commit "c58553648a3ce0b99d5dbd41129e3d4d6418d0ce")
-        (revision "0"))
+        (revision "0")
+        )
     (package
-      (name (string-append "hawen " "-" problem "-" direction))
+      (name (string-append "hawen" "-" problem "-" direction))
       (version "0.5")
       (home-page "git@gitlab.inria.fr:ffaucher/hawen_work.git")
 
@@ -46,10 +43,10 @@
           #:phases 
            (modify-phases %standard-phases
              (replace 'install
-               (lambda* (#:key outputs #:allow-other-keys)
+               (lambda* (#:key outputs problem direction #:allow-other-keys)
                  (let* ((out (assoc-ref outputs "out"))
                         (bin (string-append out "/bin")))
-                        (install-file "../bin/forward_helmholtz_acoustic-iso_hdg.out" bin))))
+                        (install-file (string-append "../bin/" direction "_helmholtz_" acoustic "-iso_hdg.out") bin))))
              (add-after 'build 'mpi-setup
                           ,%openmpi-setup)
                 ;; go into code subdirectory,  yes I know it is verbose 
@@ -61,7 +58,7 @@
                 ;; in the make.version_config file
                 (replace
                   'configure 
-                  (lambda* (#:key outputs inputs #:allow-other-keys)  
+                  (lambda* (#:key outputs inputs direction problem #:allow-other-keys)  
                     (let* ((in_metis (assoc-ref inputs "metis")) ; FIXME : factorize!!!
                            (in_scotch (assoc-ref inputs "scotch"))
                            (in_mumps (assoc-ref inputs "mumps-openmpi"))
@@ -69,6 +66,7 @@
                            (in_arpack (assoc-ref inputs "arpack-ng-openmpi"))
                            )
                       ; write the make.version_config file
+                      (display "coucou" direction)
                       (call-with-output-file "config/make.version_config"
                         (lambda (port)
                           (format port "
@@ -94,6 +92,7 @@ LPARPACK  = -L~a/lib -lparpack
                           ) 
                         ) 
                       )
+                      (chmod "config/make.version" #o755) ; make.version is not writable
                       (call-with-output-file "config/make.version"
                         (lambda (port)
                           (format port "
@@ -103,11 +102,10 @@ BINARY_DIR       :=$(ROOT_DIR)/../bin
 LIBRARY_DIR      :=$(ROOT_DIR)/../library
 DEBUG            :=0
 OPTIMIZATION     :=1
-## parallelism can only be mpi for now
 PARALLELISM    := mpi
 PROBLEM        := ~a
 DISCRETIZATION := hdg
-PROPAGATOR     := ~a
+PROPAGATOR     := helmholtz_~a-iso
 # MUMPS_LATEST MUST BE SET TO 0 IF THE VERSION OF MUMPS IS < 5.3.3
 MUMPS_LATEST=0
 # ARB, ARPACK AND PARPACK DEPENDENCIES
@@ -137,17 +135,12 @@ DEPENDENCY_PARPACK=1
           ("openmpi" ,openmpi)
           ("arb" ,arb)))
       (synopsis "Hawen")
-      (description "Hawen is a DG wave propagation simulating library for solving inverse problems ")
+      (description "Hawen is a DG wave propagation simulating library for solving inverse problems")
       (license #f ))))
-(define-public hawen-helmholtz_elastic-iso-inversion
- (make-hawen "helmholtz_elastic-iso" "inversion"))
 
-(define-public hawen-elastic-forward
- (make-hawen "helmholtz_elastic-iso" "forward"))
-
-(define-public hawen-acoustic-inversion
- (make-hawen "helmholtz_acoustic-iso" "inversion"))
-
-(define-public hawen-acoustic-forward
- (make-hawen "helmholtz_acoustic-iso" "forward"))
+; todo  : replace the combinatorial enumeration by a loop
+(define-public hawen-elastic-inversion (make-hawen "elastic" "inversion"))
+(define-public hawen-acoustic-inversion (make-hawen "acoustic" "inversion"))
+(define-public hawen-acoustic-forward (make-hawen "acoustic" "forward"))
+(define-public hawen-elastic-forward (make-hawen "elastic" "forward"))
 
