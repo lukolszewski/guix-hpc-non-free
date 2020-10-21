@@ -27,6 +27,21 @@
   #:use-module (non-free mkl)
   #:use-module (inria tainted storm))
 
+
+(define-public hdf5-parallel-openmpi-gordon
+  (package
+    (inherit hdf5-parallel-openmpi)
+    (version (string-append (package-version hdf5-parallel-openmpi) ".gordon"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments hdf5-parallel-openmpi)
+                                   ((#:configure-flags flags '())
+                                    `(delete "--enable-fortran" ,flags))
+                                   ((#:tests? #f #f)
+                                    #f)
+                                   ((#:phases phases)
+                                    `(modify-phases ,phases
+                                                    (delete 'split)))))))          ;remove the 'split' phase (FORTRAN)
+
 (define-public chameleon+cuda
   (package
     (inherit chameleon)
@@ -67,7 +82,7 @@
        ;; FIXME: don't know how to run FMR tests for now
        #:tests? #f))
     (inputs `(("zlib" , zlib)
-              ("hdf5" , hdf5)
+              ("hdf5" , hdf5-1.10)
               ("lapack" ,mkl)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gfortran" ,gfortran)))
@@ -87,7 +102,7 @@ approximations based on randomized techniques.")
                                     `(cons "-DFMR_USE_CHAMELEON=ON" ,flags))))
     (inputs `(("chameleon" ,chameleon+mkl+mt)
               ("hdf5" ,hdf5-parallel-openmpi)
-              ,@(package-inputs fmr)))))
+              ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs fmr))))))
 
 (define-public diodon
   (package
@@ -109,7 +124,7 @@ approximations based on randomized techniques.")
        #:tests? #f))
 
     (inputs `(("zlib" ,zlib)
-              ("hdf5" , hdf5)
+              ("hdf5" , hdf5-1.10)
               ("lapack" ,mkl)
               ("fmr" ,fmr)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -133,4 +148,5 @@ Reduction for very large datasets.")
     (inputs `(("chameleon" ,chameleon+mkl+mt)
               ("fmr" ,fmr+mpi)
               ("hdf5" ,hdf5-parallel-openmpi)
+              ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs diodon))
               ,@(delete `("fmr" ,fmr) (package-inputs diodon))))))
