@@ -27,9 +27,12 @@
 
       ;; This will clone the repository over SSH on the client side, provided
       ;; you have permissions to do so.
-      (source (git-checkout
-               (url "git@gitlab.inria.fr:aerosol/aerosol.git")
-               (commit commit)))
+      ;(source (git-checkout
+      ;         (url "git@gitlab.inria.fr:aerosol/aerosol.git")
+      ;         (commit commit)))
+      (source (origin
+              (method url-fetch)
+              (uri "/local/home/mhaefele/dev/aerosol.tgz")))
 
       (build-system cmake-build-system)
       (arguments
@@ -45,6 +48,7 @@
       (inputs
        `(,(assoc "openmpi" (package-inputs pampa)) ;use the same MPI as PaMPA
          ("pampa" ,pampa)
+         ("hdf5-parallel-openmpi" ,hdf5-parallel-openmpi)
          ("openblas" ,openblas)
          ("suitesparse" ,suitesparse)
          ,(assoc "pt-scotch" (package-inputs pampa))
