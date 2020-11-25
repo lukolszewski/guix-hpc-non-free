@@ -11,13 +11,31 @@
 (define-module (non-free cudnn)
   #:use-module (guix)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (ice-9 match))
 
+
+
+(define-public patchelf1G
+(package 
+  (inherit patchelf)
+  (name "patchelf1G")
+  (arguments
+  ;; we want to patch the hardsize of 32M to 1.5G
+  '(#:phases (modify-phases %standard-phases
+    (add-after 'unpack 'patch-to-1G
+    (lambda _ 
+          (substitute* "src/patchelf.cc"
+                       (("32 \\* 1024") "1536 * 1024"))
+          #true)
+    ))
+  #:tests? #f)
+  ))
+)
 (define (make-cudnn version origin)
   (package
     (name "cudnn")
@@ -35,10 +53,49 @@
 
        #:strip-binaries? #f                       ;no need
 
+       ;; XXX: This would check DT_RUNPATH, but patchelf populate DT_RPATH,
+       ;; not DT_RUNPATH.
+       #:validate-runpath? #f
+
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (delete 'check)
-                  (delete 'build) ;; for now, delete maybe later we need to patchelf
+                  (replace 'build
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (define out
+                        (assoc-ref outputs "out"))
+                      (define libc
+                        (assoc-ref inputs "libc"))
+                      (define gcc-lib
+                        (assoc-ref inputs "gcc:lib"))
+                      (define ld.so
+                        (string-append libc ,(glibc-dynamic-linker)))
+                      (define rpath
+                        (string-join (list "$ORIGIN"
+                                           (string-append out "/lib")
+                                           (string-append out "/nvvm/lib64")
+                                           (string-append libc "/lib")
+                                           (string-append gcc-lib "/lib"))
+                                     ":"))
+
+                      (define (patch-elf file)
+                        (make-file-writable file)
+                        (unless (string-contains file ".so")
+                          (format #t "Setting interpreter on '~a'...~%" file)
+                          (invoke "patchelf" "--set-interpreter" ld.so
+                                  file))
+                        (format #t "Setting RPATH on '~a'...~%" file)
+                        (invoke "patchelf" "--set-rpath" rpath
+                                "--force-rpath" file))
+
+                      (for-each (lambda (file)
+                                  (when (elf-file? file)
+                                    (patch-elf file)))
+                                (find-files "."
+                                            (lambda (file stat)
+                                              (eq? 'regular
+                                                   (stat:type stat)))))
+                      #t))
                   (replace 'install
                      (lambda* (#:key outputs #:allow-other-keys)
                        (let* ((out (assoc-ref outputs "out"))
@@ -55,6 +112,8 @@
                                  includedir)
                   #t)))
                   )))
+    (native-inputs
+     `(("patchelf1G" ,patchelf1G))) 
     (inputs
      `(("gcc:lib" ,gcc "lib")))
     (synopsis
@@ -67,6 +126,7 @@
     (supported-systems '("x86_64-linux"))))
 
 (define-syntax-rule (cudnn-source url hash)
+  ;; stole url from arch linux : https://github.com/archlinux/svntogit-community/blob/packages/cudnn/trunk/PKGBUILD
   (origin
     (uri url)
     (sha256 (base32 hash))
@@ -75,7 +135,6 @@
 (define-public cudnn-8.0.5
   (make-cudnn "8.0.5.39"
              (cudnn-source
-  ;; stole url from arch linux : https://github.com/archlinux/svntogit-community/blob/packages/cudnn/trunk/PKGBUILD
               "https://developer.download.nvidia.com/compute/redist/cudnn/v8.0.5/cudnn-11.1-linux-x64-v8.0.5.39.tgz"
               "1khcn3wldm6dpq7rxjm05r23ji3m31wm1cbcdz6ap79rg7x6n10x")))
 
