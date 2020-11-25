@@ -15,7 +15,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (ice-9 match))
 
@@ -35,10 +34,6 @@
        #:substitutable? #f
 
        #:strip-binaries? #f                       ;no need
-
-       ;; XXX: This would check DT_RUNPATH, but patchelf populate DT_RPATH,
-       ;; not DT_RUNPATH.
-       #:validate-runpath? #f
 
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
@@ -60,8 +55,6 @@
                                  includedir)
                   #t)))
                   )))
-    (native-inputs
-     `(("patchelf" ,patchelf)))  ;; unused for now
     (inputs
      `(("gcc:lib" ,gcc "lib")))
     (synopsis
@@ -74,7 +67,6 @@
     (supported-systems '("x86_64-linux"))))
 
 (define-syntax-rule (cudnn-source url hash)
-  ;; stole url from arch linux : https://github.com/archlinux/svntogit-community/blob/packages/cudnn/trunk/PKGBUILD
   (origin
     (uri url)
     (sha256 (base32 hash))
@@ -83,6 +75,7 @@
 (define-public cudnn-8.0.5
   (make-cudnn "8.0.5.39"
              (cudnn-source
+  ;; stole url from arch linux : https://github.com/archlinux/svntogit-community/blob/packages/cudnn/trunk/PKGBUILD
               "https://developer.download.nvidia.com/compute/redist/cudnn/v8.0.5/cudnn-11.1-linux-x64-v8.0.5.39.tgz"
               "1khcn3wldm6dpq7rxjm05r23ji3m31wm1cbcdz6ap79rg7x6n10x")))
 
