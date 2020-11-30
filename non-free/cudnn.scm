@@ -73,7 +73,6 @@
                       (define rpath
                         (string-join (list "$ORIGIN"
                                            (string-append out "/lib")
-                                           (string-append out "/nvvm/lib64")
                                            (string-append libc "/lib")
                                            (string-append gcc-lib "/lib"))
                                      ":"))
