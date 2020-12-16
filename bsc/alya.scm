@@ -43,9 +43,8 @@ propagation, etc.")
              (sha256
               (base32
                "1p3a7sgmy5m2j28m1qnj70fzzmqn2qdrk1bsv4yzpk2a55hfrlqb"))))
-    ;;(arguments
-    ;; '(#:configure-flags '("-DSHARED=ON")
-    ;;                     #:tests? #f))
+    (arguments
+     '(#:configure-flags '("-DWITH_MAPHYS=ON")))
     (build-system cmake-build-system)
     (inputs `(("openmpi" ,openmpi)
               ("ssh" ,openssh)
