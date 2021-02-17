@@ -63,7 +63,7 @@
    (arguments
     (substitute-keyword-arguments (package-arguments chameleon)
                                   ((#:configure-flags flags '())
-                                   `(cons "-DBLA_VENDOR=Intel10_64lp" ,flags))))
+                                   `(cons "-DBLA_VENDOR=Intel10_64lp" (cons "-DCBLAS_MT=ON" (cons "-DLAPACKE_MT=ON" ,flags))))))
    (inputs `(("lapack" ,mkl)
              ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
 
