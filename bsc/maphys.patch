@@ -1,0 +1,27 @@
+diff --git a/cmake/maphys.cmake b/cmake/maphys.cmake
+index da18722ea..27ab84945 100644
+--- a/cmake/maphys.cmake
++++ b/cmake/maphys.cmake
+@@ -1,6 +1,20 @@
+ function(maphys)
+   if (WITH_MAPHYS MATCHES "ON")
+-    add_definitions(-DMAPHYS)
+-    target_link_libraries(${PROJECT_NAME} maphys)
++    if(NOT MAPHYS_FOUND)
++      # Seach for maphys using pkg-config
++      if(PKG_CONFIG_FOUND AND PKG_CONFIG_EXECUTABLE)
++        message(STATUS "Looking for MAPHYS - found using PkgConfig")
++        pkg_search_module(MAPHYS maphys)
++      endif()
++      if(MAPHYS_FOUND)
++        message(STATUS "Found MAPHYS")
++        add_definitions(-DMAPHYS)
++        target_include_directories(${PROJECT_NAME} PRIVATE ${MAPHYS_INCLUDE_DIRS})
++        target_link_libraries(${PROJECT_NAME} ${MAPHYS_LINK_LIBRARIES})
++      else()
++        message(FATAL_ERROR "MAPHYS NOT FOUND")
++      endif()
++
++    endif()
+   endif()
+ endfunction()
