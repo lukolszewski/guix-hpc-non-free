@@ -77,11 +77,12 @@
                           (recursive? #t)))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DFMR_BUILD_TESTS=ON"
+                           "-DFMR_USE_HDF5=ON")))
 
-       ;; FIXME: don't know how to run FMR tests for now
-       #:tests? #f))
     (inputs `(("zlib" , zlib)
+              ("bzip2" , bzip2)
               ("hdf5" , hdf5-1.10)
               ("lapack" ,mkl)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -150,3 +151,44 @@ Reduction for very large datasets.")
               ("hdf5" ,hdf5-parallel-openmpi)
               ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs diodon))
               ,@(delete `("fmr" ,fmr) (package-inputs diodon))))))
+
+(define-public cppdiodon
+  (package
+    (name "cppdiodon")
+    (version "0")
+    (home-page "https://gitlab.inria.fr/diodon/cppdiodon")
+    (source (git-checkout (url "git@gitlab.inria.fr:diodon/cppdiodon.git")
+                          (branch "master")))     ;or (commit "1234abc")
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
+                           "-DDIODON_USE_INTERNAL_FMR=OFF")))
+
+    (inputs `(("zlib" ,zlib)
+              ("bzip2" , bzip2)
+              ("hdf5" , hdf5-1.10)
+              ("lapack" ,mkl)
+              ("fmr" ,fmr)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gfortran" ,gfortran)))
+
+    (synopsis "Librairies for Multivariate Data Analysis and
+Dimensionality Reduction for very large datasets")
+    (description
+     "Librairies for Multivariate Data Analysis and Dimensionality
+Reduction for very large datasets.")
+    (license license:cecill-c)))
+
+(define-public cppdiodon+mpi
+  (package
+    (inherit cppdiodon)
+    (name "cppdiodon-mpi")
+    (arguments
+     (substitute-keyword-arguments (package-arguments cppdiodon)
+                                   ((#:configure-flags flags '())
+                                    `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
+    (inputs `(("chameleon" ,chameleon+mkl+mt)
+              ("fmr" ,fmr+mpi)
+              ("hdf5" ,hdf5-parallel-openmpi)
+              ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs cppdiodon))
+              ,@(delete `("fmr" ,fmr) (package-inputs cppdiodon))))))
