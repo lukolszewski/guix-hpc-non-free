@@ -18,6 +18,7 @@
   #:use-module (gnu packages maths)
   #:use-module (guix utils)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (inria hiepacs)
@@ -78,8 +79,11 @@
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
                            "-DFMR_BUILD_TESTS=ON"
-                           "-DFMR_USE_HDF5=ON")))
+                           "-DFMR_USE_HDF5=ON")
+       ;; FIXME: trouble with STARPU /tmp dir.
+       #:tests? #f))
 
     (inputs `(("zlib" , zlib)
               ("bzip2" , bzip2)
@@ -93,17 +97,50 @@
 approximations based on randomized techniques.")
     (license license:cecill-c)))
 
+;; FIXME: hdf5 delete in package inputs do not work
+;;(define-public fmr+mpi
+;;  (package
+;;    (inherit fmr)
+;;    (name "fmr-mpi")
+;;    (arguments
+;;     (substitute-keyword-arguments (package-arguments fmr)
+;;                                   ((#:configure-flags flags '())
+;;                                    `(cons "-DFMR_USE_CHAMELEON=ON" ,flags))))
+;;    (inputs `(("chameleon" ,chameleon+mkl+mt)
+;;              ("hdf5" ,hdf5-parallel-openmpi)
+;;              ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs fmr))))))
+
 (define-public fmr+mpi
   (package
-    (inherit fmr)
     (name "fmr-mpi")
+    (version "0")
+    (home-page "https://gitlab.inria.fr/piblanch/fmr")
+    (source (git-checkout (url "git@gitlab.inria.fr:piblanch/fmr.git")
+                          (branch "diodon")     ;or (commit "1234abc")
+                          (recursive? #t)))
+    (build-system cmake-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments fmr)
-                                   ((#:configure-flags flags '())
-                                    `(cons "-DFMR_USE_CHAMELEON=ON" ,flags))))
-    (inputs `(("chameleon" ,chameleon+mkl+mt)
-              ("hdf5" ,hdf5-parallel-openmpi)
-              ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs fmr))))))
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+                           "-DFMR_BUILD_TESTS=ON"
+                           "-DFMR_USE_HDF5=ON"
+                           "-DFMR_USE_CHAMELEON=ON")
+       ;; FIXME: trouble with STARPU /tmp dir.
+       #:tests? #f))
+
+    (inputs `(("zlib" , zlib)
+              ("bzip2" , bzip2)
+              ("hdf5" , hdf5-parallel-openmpi)
+              ("lapack" ,mkl)
+              ("chameleon" ,chameleon+mkl+mt)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gfortran" ,gfortran)
+                     ("ssh" ,openssh)))
+    (synopsis "Fast and accurate Methods for Randomized numerical linear algebra")
+    (description
+     "This project provides routines for performing low-rank matrix
+approximations based on randomized techniques.")
+    (license license:cecill-c)))
 
 (define-public diodon
   (package
@@ -138,19 +175,55 @@ Dimensionality Reduction for very large datasets")
 Reduction for very large datasets.")
     (license license:cecill-c)))
 
+;; FIXME: fmr and hdf5 delete in package inputs do not work
+;; (define-public diodon+mpi
+;;   (package
+;;     (inherit diodon)
+;;     (name "diodon-mpi")
+;;     (arguments
+;;      (substitute-keyword-arguments (package-arguments diodon)
+;;                                    ((#:configure-flags flags '())
+;;                                     `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
+;;     (inputs `(("chameleon" ,chameleon+mkl+mt)
+;;               ("fmr" ,fmr+mpi)
+;;               ("hdf5" ,hdf5-parallel-openmpi)
+;;               ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs diodon))
+;;               ,@(delete `("fmr" ,fmr) (package-inputs diodon))))))
 (define-public diodon+mpi
   (package
-    (inherit diodon)
     (name "diodon-mpi")
+    (version "0")
+    (home-page "https://gitlab.inria.fr/afranc/diodon")
+    (source (git-checkout (url "git@gitlab.inria.fr:afranc/diodon.git")
+                          (branch "master")))     ;or (commit "1234abc")
+    (build-system cmake-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments diodon)
-                                   ((#:configure-flags flags '())
-                                    `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
-    (inputs `(("chameleon" ,chameleon+mkl+mt)
+     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
+                           "-DDIODON_USE_INTERNAL_FMR=OFF"
+                           "-DDIODON_USE_CHAMELEON=ON")
+       #:phases (modify-phases %standard-phases
+                               (add-after 'unpack 'chdir
+                                          (lambda _
+                                            (chdir "cpp"))))
+
+       ;; FIXME: don't know how to run Diodon tests for now
+       #:tests? #f))
+
+    (inputs `(("zlib" ,zlib)
+              ("hdf5" , hdf5-parallel-openmpi)
+              ("lapack" ,mkl)
               ("fmr" ,fmr+mpi)
-              ("hdf5" ,hdf5-parallel-openmpi)
-              ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs diodon))
-              ,@(delete `("fmr" ,fmr) (package-inputs diodon))))))
+              ("chameleon" ,chameleon+mkl+mt)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gfortran" ,gfortran)
+                     ("ssh" ,openssh)))
+
+    (synopsis "Librairies for Multivariate Data Analysis and
+Dimensionality Reduction for very large datasets")
+    (description
+     "Librairies for Multivariate Data Analysis and Dimensionality
+Reduction for very large datasets.")
+    (license license:cecill-c)))
 
 (define-public cppdiodon
   (package
@@ -162,7 +235,10 @@ Reduction for very large datasets.")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                           "-DDIODON_USE_INTERNAL_FMR=OFF")))
+                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+                           "-DDIODON_USE_INTERNAL_FMR=OFF")
+       ;; FIXME: trouble with STARPU /tmp dir.
+       #:tests? #f))
 
     (inputs `(("zlib" ,zlib)
               ("bzip2" , bzip2)
@@ -179,16 +255,50 @@ Dimensionality Reduction for very large datasets")
 Reduction for very large datasets.")
     (license license:cecill-c)))
 
+;; FIXME: fmr and hdf5 delete in package inputs do not work
+;; (define-public cppdiodon+mpi
+;;   (package
+;;     (inherit cppdiodon)
+;;     (name "cppdiodon-mpi")
+;;     (arguments
+;;      (substitute-keyword-arguments (package-arguments cppdiodon)
+;;                                    ((#:configure-flags flags '())
+;;                                     `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
+;;     (inputs `(("chameleon" ,chameleon+mkl+mt)
+;;               ("fmr" ,fmr+mpi)
+;;               ("hdf5" ,hdf5-parallel-openmpi)
+;;               ,@(delete `("fmr" ,fmr) (package-inputs cppdiodon))
+;;               ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs cppdiodon))))))
+
 (define-public cppdiodon+mpi
   (package
-    (inherit cppdiodon)
     (name "cppdiodon-mpi")
+    (version "0")
+    (home-page "https://gitlab.inria.fr/diodon/cppdiodon")
+    (source (git-checkout (url "git@gitlab.inria.fr:diodon/cppdiodon.git")
+                          (branch "master")))     ;or (commit "1234abc")
+    (build-system cmake-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments cppdiodon)
-                                   ((#:configure-flags flags '())
-                                    `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
-    (inputs `(("chameleon" ,chameleon+mkl+mt)
-              ("fmr" ,fmr+mpi)
-              ("hdf5" ,hdf5-parallel-openmpi)
-              ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs cppdiodon))
-              ,@(delete `("fmr" ,fmr) (package-inputs cppdiodon))))))
+     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
+                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+                           "-DDIODON_USE_INTERNAL_FMR=OFF"
+                           "-DDIODON_USE_CHAMELEON=ON")
+       ;; FIXME: trouble with STARPU /tmp dir.
+       #:tests? #f))
+
+    (inputs `(("zlib" ,zlib)
+              ("bzip2" , bzip2)
+              ("hdf5" , hdf5-parallel-openmpi)
+              ("lapack" ,mkl)
+              ("chameleon" ,chameleon+mkl+mt)
+              ("fmr" ,fmr+mpi)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gfortran" ,gfortran)
+                     ("ssh" ,openssh)))
+
+    (synopsis "Librairies for Multivariate Data Analysis and
+Dimensionality Reduction for very large datasets")
+    (description
+     "Librairies for Multivariate Data Analysis and Dimensionality
+Reduction for very large datasets.")
+    (license license:cecill-c)))
