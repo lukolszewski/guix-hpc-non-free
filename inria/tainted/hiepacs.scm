@@ -68,6 +68,20 @@
    (inputs `(("lapack" ,mkl)
              ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
 
+(define-public chameleon+cuda+mkl+mt
+  (package
+    (inherit chameleon+mkl+mt)
+    (name "chameleon-cuda-mkl-mt")
+    (arguments
+     (substitute-keyword-arguments (package-arguments chameleon+mkl+mt)
+                                   ((#:configure-flags flags '())
+                                    `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
+    (inputs
+     `(("cuda" ,cuda)
+       ,@(package-inputs chameleon+mkl+mt)))
+    (propagated-inputs `(("starpu" ,starpu+cuda)
+                         ,@(delete `("starpu" ,starpu) (package-inputs chameleon+mkl+mt))))))
+
 (define-public fmr
   (package
     (name "fmr")
