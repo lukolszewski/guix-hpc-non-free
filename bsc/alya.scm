@@ -10,6 +10,7 @@
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (inria mpi)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages maths)
@@ -36,14 +37,14 @@ propagation, etc.")
     (source (origin
              (method git-fetch)
              (uri (git-reference
-                   (url "https://gitlab.bsc.es/alya/alya.git")
-                   (commit "74acfff3a94621f8b44fb5ca01431eb8e5a8c6a0")
+                   (url "https://gitlab.com/bsc-alya/projects/alya-maphys.git")
+                   (commit "f0306db3a3b99e1d19f1165a7d2c7e6f71a88b23)")
                    (recursive? #f)))
              (file-name (string-append name "-" version "-checkout"))
              (patches (search-patches "bsc/maphys.patch"))
              (sha256
               (base32
-               "1p3a7sgmy5m2j28m1qnj70fzzmqn2qdrk1bsv4yzpk2a55hfrlqb"))))
+               "0hwl1j171hmax0sfpk3hvn7rsw4z6qi03vsdkvmbgfw4bffjcjya"))))
     (arguments
      '(#:configure-flags '("-DWITH_MAPHYS=ON")))
     (build-system cmake-build-system)
@@ -51,6 +52,6 @@ propagation, etc.")
               ("ssh" ,openssh)
               ("maphys" ,maphys)
               ("openblas" ,openblas)))
-    (native-inputs `(("gfortran" ,gfortran)
+    (native-inputs `(("gfortran" ,gfortran@8)
                      ("pkg-config" ,pkg-config)))
     (license #f)))
