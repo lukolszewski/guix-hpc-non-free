@@ -1,7 +1,7 @@
 ;;; This module extends GNU Guix and is licensed under the same terms, those
 ;;; of the GNU GPL version 3 or (at your option) any later version.
 ;;;
-;;; Copyright © 2020 Inria
+;;; Copyright © 2020, 2021 Inria
 
 (define-module (bsc alya)
   #:use-module (guix)
@@ -52,6 +52,6 @@ propagation, etc.")
               ("ssh" ,openssh)
               ("maphys" ,maphys)
               ("openblas" ,openblas)))
-    (native-inputs `(("gfortran" ,gfortran@8)
+    (native-inputs `(("gfortran" ,gfortran)
                      ("pkg-config" ,pkg-config)))
     (license #f)))
