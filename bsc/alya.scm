@@ -9,7 +9,6 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (inria mpi)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages gcc)
@@ -20,6 +19,19 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages fabric-management))
+
+(define gfortran-10
+  ;; (custom-gcc gcc-10 "gfortran" '("fortran")
+  ;;             (list (search-path-specification
+  ;;                    (variable "CPATH")
+  ;;                    (files '("include")))
+  ;;                   (search-path-specification
+  ;;                    (variable "LIBRARY_PATH")
+  ;;                    (files '("lib" "lib64")))))
+  (package
+   (inherit gfortran)
+   (version (package-version gcc-10))
+   (source (package-source gcc-10))))
 
 (define-public alya
   (package
@@ -46,12 +58,12 @@ propagation, etc.")
               (base32
                "0hwl1j171hmax0sfpk3hvn7rsw4z6qi03vsdkvmbgfw4bffjcjya"))))
     (arguments
-     '(#:configure-flags '("-DWITH_MAPHYS=ON")))
+     '(#:configure-flags '("-DWITH_MAPHYS=OFF")))
     (build-system cmake-build-system)
     (inputs `(("openmpi" ,openmpi)
               ("ssh" ,openssh)
-              ("maphys" ,maphys)
+              ;; ("maphys" ,maphys)
               ("openblas" ,openblas)))
-    (native-inputs `(("gfortran" ,gfortran)
+    (native-inputs `(("gfortran" ,gfortran-10)
                      ("pkg-config" ,pkg-config)))
     (license #f)))
