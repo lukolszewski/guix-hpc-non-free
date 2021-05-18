@@ -32,7 +32,7 @@
 (define-public hdf5-parallel-openmpi-gordon
   (package
     (inherit hdf5-parallel-openmpi)
-    (version (string-append (package-version hdf5-parallel-openmpi) ".gordon"))
+    (name "hdf5-parallel-openmpi-gordon")
     (arguments
      (substitute-keyword-arguments (package-arguments hdf5-parallel-openmpi)
                                    ((#:configure-flags flags '())
