@@ -28,21 +28,6 @@
   #:use-module (non-free mkl)
   #:use-module (inria tainted storm))
 
-
-(define-public hdf5-parallel-openmpi-gordon
-  (package
-    (inherit hdf5-parallel-openmpi)
-    (name "hdf5-parallel-openmpi-gordon")
-    (arguments
-     (substitute-keyword-arguments (package-arguments hdf5-parallel-openmpi)
-                                   ((#:configure-flags flags '())
-                                    `(delete "--enable-fortran" ,flags))
-                                   ((#:tests? #f #f)
-                                    #f)
-                                   ((#:phases phases)
-                                    `(modify-phases ,phases
-                                                    (delete 'split)))))))          ;remove the 'split' phase (FORTRAN)
-
 (define-public chameleon+cuda
   (package
     (inherit chameleon)
@@ -86,9 +71,8 @@
   (package
     (name "fmr")
     (version "0")
-    (home-page "https://gitlab.inria.fr/piblanch/fmr")
-    (source (git-checkout (url "git@gitlab.inria.fr:piblanch/fmr.git")
-                          (branch "diodon")     ;or (commit "1234abc")
+    (home-page "https://gitlab.inria.fr/compose/oldstack/fmr")
+    (source (git-checkout (url "git@gitlab.inria.fr:compose/oldstack/fmr.git")
                           (recursive? #t)))
     (build-system cmake-build-system)
     (arguments
@@ -128,9 +112,8 @@ approximations based on randomized techniques.")
   (package
     (name "fmr-mpi")
     (version "0")
-    (home-page "https://gitlab.inria.fr/piblanch/fmr")
-    (source (git-checkout (url "git@gitlab.inria.fr:piblanch/fmr.git")
-                          (branch "diodon")     ;or (commit "1234abc")
+    (home-page "https://gitlab.inria.fr/compose/oldstack/fmr")
+    (source (git-checkout (url "git@gitlab.inria.fr:compose/oldstack/fmr.git")
                           (recursive? #t)))
     (build-system cmake-build-system)
     (arguments
@@ -154,89 +137,6 @@ approximations based on randomized techniques.")
     (description
      "This project provides routines for performing low-rank matrix
 approximations based on randomized techniques.")
-    (license license:cecill-c)))
-
-(define-public diodon
-  (package
-    (name "diodon")
-    (version "0")
-    (home-page "https://gitlab.inria.fr/afranc/diodon")
-    (source (git-checkout (url "git@gitlab.inria.fr:afranc/diodon.git")
-                          (branch "master")))     ;or (commit "1234abc")
-    (build-system cmake-build-system)
-    (arguments
-     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                           "-DDIODON_USE_INTERNAL_FMR=OFF")
-       #:phases (modify-phases %standard-phases
-                               (add-after 'unpack 'chdir
-                                          (lambda _
-                                            (chdir "cpp"))))
-
-       ;; FIXME: don't know how to run Diodon tests for now
-       #:tests? #f))
-
-    (inputs `(("zlib" ,zlib)
-              ("hdf5" , hdf5-1.10)
-              ("lapack" ,mkl)
-              ("fmr" ,fmr)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)))
-
-    (synopsis "Librairies for Multivariate Data Analysis and
-Dimensionality Reduction for very large datasets")
-    (description
-     "Librairies for Multivariate Data Analysis and Dimensionality
-Reduction for very large datasets.")
-    (license license:cecill-c)))
-
-;; FIXME: fmr and hdf5 delete in package inputs do not work
-;; (define-public diodon+mpi
-;;   (package
-;;     (inherit diodon)
-;;     (name "diodon-mpi")
-;;     (arguments
-;;      (substitute-keyword-arguments (package-arguments diodon)
-;;                                    ((#:configure-flags flags '())
-;;                                     `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
-;;     (inputs `(("chameleon" ,chameleon+mkl+mt)
-;;               ("fmr" ,fmr+mpi)
-;;               ("hdf5" ,hdf5-parallel-openmpi)
-;;               ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs diodon))
-;;               ,@(delete `("fmr" ,fmr) (package-inputs diodon))))))
-(define-public diodon+mpi
-  (package
-    (name "diodon-mpi")
-    (version "0")
-    (home-page "https://gitlab.inria.fr/afranc/diodon")
-    (source (git-checkout (url "git@gitlab.inria.fr:afranc/diodon.git")
-                          (branch "master")))     ;or (commit "1234abc")
-    (build-system cmake-build-system)
-    (arguments
-     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                           "-DDIODON_USE_INTERNAL_FMR=OFF"
-                           "-DDIODON_USE_CHAMELEON=ON")
-       #:phases (modify-phases %standard-phases
-                               (add-after 'unpack 'chdir
-                                          (lambda _
-                                            (chdir "cpp"))))
-
-       ;; FIXME: don't know how to run Diodon tests for now
-       #:tests? #f))
-
-    (inputs `(("zlib" ,zlib)
-              ("hdf5" , hdf5-parallel-openmpi)
-              ("lapack" ,mkl)
-              ("fmr" ,fmr+mpi)
-              ("chameleon" ,chameleon+mkl+mt)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)
-                     ("ssh" ,openssh)))
-
-    (synopsis "Librairies for Multivariate Data Analysis and
-Dimensionality Reduction for very large datasets")
-    (description
-     "Librairies for Multivariate Data Analysis and Dimensionality
-Reduction for very large datasets.")
     (license license:cecill-c)))
 
 (define-public cppdiodon
