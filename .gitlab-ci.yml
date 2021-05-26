@@ -73,6 +73,12 @@ mumps_mkl_metis_openmpi:
     - .channels/guix-hpc/bin/guix describe
     - .channels/guix-hpc/bin/guix build -L . mumps-mkl-metis-openmpi
 
+pastix_cuda:
+  stage: build
+  script:
+    - .channels/guix-hpc/bin/guix describe
+    - .channels/guix-hpc/bin/guix build -L . pastix-cuda
+
 pastix_5_mkl:
   stage: build
   script:
