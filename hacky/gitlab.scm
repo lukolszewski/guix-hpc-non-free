@@ -17,7 +17,7 @@
 (define-public gitlab-runner
   (package
     (name "gitlab-runner")
-    (version "10.6.0")
+    (version "11.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://" name
@@ -26,7 +26,7 @@
               (file-name (string-append name "-linux-amd64"))
               (sha256
                (base32
-                "0jbn6j6d9gwnvlgzd9ylyk5js7qk4s2hpg3vvgbc2gnbl2z32970"))))
+                "1mg5azzwkm7issv6nbpk5vlzyibx2d7hgxwdp7ivknzwg80z48pv"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))

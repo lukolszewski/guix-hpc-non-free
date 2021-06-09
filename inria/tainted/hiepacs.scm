@@ -28,34 +28,19 @@
   #:use-module (non-free mkl)
   #:use-module (inria tainted storm))
 
-
-(define-public hdf5-parallel-openmpi-gordon
-  (package
-    (inherit hdf5-parallel-openmpi)
-    (name "hdf5-parallel-openmpi-gordon")
-    (arguments
-     (substitute-keyword-arguments (package-arguments hdf5-parallel-openmpi)
-                                   ((#:configure-flags flags '())
-                                    `(delete "--enable-fortran" ,flags))
-                                   ((#:tests? #f #f)
-                                    #f)
-                                   ((#:phases phases)
-                                    `(modify-phases ,phases
-                                                    (delete 'split)))))))          ;remove the 'split' phase (FORTRAN)
-
 (define-public chameleon+cuda
   (package
     (inherit chameleon)
     (name "chameleon-cuda")
     (arguments
      (substitute-keyword-arguments (package-arguments chameleon)
-                                   ((#:configure-flags flags '())
-                                    `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
+				   ((#:configure-flags flags '())
+				    `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
     (inputs
      `(("cuda" ,cuda)
        ,@(package-inputs chameleon)))
     (propagated-inputs `(("starpu" ,starpu+cuda)
-                         ,@(delete `("starpu" ,starpu) (package-inputs chameleon))))))
+			 ,@(delete `("starpu" ,starpu) (package-inputs chameleon))))))
 
 (define-public chameleon+mkl+mt
   (package
@@ -63,10 +48,10 @@
    (name "chameleon-mkl-mt")
    (arguments
     (substitute-keyword-arguments (package-arguments chameleon)
-                                  ((#:configure-flags flags '())
-                                   `(cons "-DBLA_VENDOR=Intel10_64lp" (cons "-DCBLAS_MT=ON" (cons "-DLAPACKE_MT=ON" ,flags))))))
+				  ((#:configure-flags flags '())
+				   `(cons "-DBLA_VENDOR=Intel10_64lp" (cons "-DCBLAS_MT=ON" (cons "-DLAPACKE_MT=ON" ,flags))))))
    (inputs `(("lapack" ,mkl)
-             ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
+	     ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
 
 (define-public chameleon+cuda+mkl+mt
   (package
@@ -74,37 +59,49 @@
     (name "chameleon-cuda-mkl-mt")
     (arguments
      (substitute-keyword-arguments (package-arguments chameleon+mkl+mt)
-                                   ((#:configure-flags flags '())
-                                    `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
+				   ((#:configure-flags flags '())
+				    `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
     (inputs
      `(("cuda" ,cuda)
        ,@(package-inputs chameleon+mkl+mt)))
     (propagated-inputs `(("starpu" ,starpu+cuda)
-                         ,@(delete `("starpu" ,starpu) (package-inputs chameleon+mkl+mt))))))
+			 ,@(delete `("starpu" ,starpu) (package-inputs chameleon+mkl+mt))))))
+
+(define-public pastix+cuda
+  (package
+   (inherit pastix)
+   (name "pastix-cuda")
+   (arguments
+    (substitute-keyword-arguments (package-arguments pastix)
+				  ((#:configure-flags flags '())
+				   `(cons "-DPASTIX_WITH_CUDA=ON" ,flags))))
+   (inputs
+    `(("cuda" ,cuda)
+      ("starpu" ,starpu+cuda)
+      ,@(delete `("starpu" ,starpu) (package-inputs pastix))))))
 
 (define-public fmr
   (package
     (name "fmr")
     (version "0")
-    (home-page "https://gitlab.inria.fr/piblanch/fmr")
-    (source (git-checkout (url "git@gitlab.inria.fr:piblanch/fmr.git")
-                          (branch "diodon")     ;or (commit "1234abc")
-                          (recursive? #t)))
+    (home-page "https://gitlab.inria.fr/compose/oldstack/fmr")
+    (source (git-checkout (url "git@gitlab.inria.fr:compose/oldstack/fmr.git")
+			  (recursive? #t)))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
-                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                           "-DFMR_BUILD_TESTS=ON"
-                           "-DFMR_USE_HDF5=ON")
+			   "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			   "-DFMR_BUILD_TESTS=ON"
+			   "-DFMR_USE_HDF5=ON")
        ;; FIXME: trouble with STARPU /tmp dir.
        #:tests? #f))
 
     (inputs `(("zlib" , zlib)
-              ("bzip2" , bzip2)
-              ("hdf5" , hdf5-1.10)
-              ("lapack" ,mkl)))
+	      ("bzip2" , bzip2)
+	      ("hdf5" , hdf5-1.10)
+	      ("lapack" ,mkl)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)))
+		     ("gfortran" ,gfortran)))
     (synopsis "Fast and accurate Methods for Randomized numerical linear algebra")
     (description
      "This project provides routines for performing low-rank matrix
@@ -128,115 +125,31 @@ approximations based on randomized techniques.")
   (package
     (name "fmr-mpi")
     (version "0")
-    (home-page "https://gitlab.inria.fr/piblanch/fmr")
-    (source (git-checkout (url "git@gitlab.inria.fr:piblanch/fmr.git")
-                          (branch "diodon")     ;or (commit "1234abc")
-                          (recursive? #t)))
+    (home-page "https://gitlab.inria.fr/compose/oldstack/fmr")
+    (source (git-checkout (url "git@gitlab.inria.fr:compose/oldstack/fmr.git")
+			  (recursive? #t)))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
-                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                           "-DFMR_BUILD_TESTS=ON"
-                           "-DFMR_USE_HDF5=ON"
-                           "-DFMR_USE_CHAMELEON=ON")
+			   "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			   "-DFMR_BUILD_TESTS=ON"
+			   "-DFMR_USE_HDF5=ON"
+			   "-DFMR_USE_CHAMELEON=ON")
        ;; FIXME: trouble with STARPU /tmp dir.
        #:tests? #f))
 
     (inputs `(("zlib" , zlib)
-              ("bzip2" , bzip2)
-              ("hdf5" , hdf5-parallel-openmpi)
-              ("lapack" ,mkl)
-              ("chameleon" ,chameleon+mkl+mt)))
+	      ("bzip2" , bzip2)
+	      ("hdf5" , hdf5-parallel-openmpi)
+	      ("lapack" ,mkl)
+	      ("chameleon" ,chameleon+mkl+mt)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)
-                     ("ssh" ,openssh)))
+		     ("gfortran" ,gfortran)
+		     ("ssh" ,openssh)))
     (synopsis "Fast and accurate Methods for Randomized numerical linear algebra")
     (description
      "This project provides routines for performing low-rank matrix
 approximations based on randomized techniques.")
-    (license license:cecill-c)))
-
-(define-public diodon
-  (package
-    (name "diodon")
-    (version "0")
-    (home-page "https://gitlab.inria.fr/afranc/diodon")
-    (source (git-checkout (url "git@gitlab.inria.fr:afranc/diodon.git")
-                          (branch "master")))     ;or (commit "1234abc")
-    (build-system cmake-build-system)
-    (arguments
-     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                           "-DDIODON_USE_INTERNAL_FMR=OFF")
-       #:phases (modify-phases %standard-phases
-                               (add-after 'unpack 'chdir
-                                          (lambda _
-                                            (chdir "cpp"))))
-
-       ;; FIXME: don't know how to run Diodon tests for now
-       #:tests? #f))
-
-    (inputs `(("zlib" ,zlib)
-              ("hdf5" , hdf5-1.10)
-              ("lapack" ,mkl)
-              ("fmr" ,fmr)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)))
-
-    (synopsis "Librairies for Multivariate Data Analysis and
-Dimensionality Reduction for very large datasets")
-    (description
-     "Librairies for Multivariate Data Analysis and Dimensionality
-Reduction for very large datasets.")
-    (license license:cecill-c)))
-
-;; FIXME: fmr and hdf5 delete in package inputs do not work
-;; (define-public diodon+mpi
-;;   (package
-;;     (inherit diodon)
-;;     (name "diodon-mpi")
-;;     (arguments
-;;      (substitute-keyword-arguments (package-arguments diodon)
-;;                                    ((#:configure-flags flags '())
-;;                                     `(cons "-DDIODON_USE_CHAMELEON=ON" ,flags))))
-;;     (inputs `(("chameleon" ,chameleon+mkl+mt)
-;;               ("fmr" ,fmr+mpi)
-;;               ("hdf5" ,hdf5-parallel-openmpi)
-;;               ,@(delete `("hdf5" ,hdf5-1.10) (package-inputs diodon))
-;;               ,@(delete `("fmr" ,fmr) (package-inputs diodon))))))
-(define-public diodon+mpi
-  (package
-    (name "diodon-mpi")
-    (version "0")
-    (home-page "https://gitlab.inria.fr/afranc/diodon")
-    (source (git-checkout (url "git@gitlab.inria.fr:afranc/diodon.git")
-                          (branch "master")))     ;or (commit "1234abc")
-    (build-system cmake-build-system)
-    (arguments
-     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                           "-DDIODON_USE_INTERNAL_FMR=OFF"
-                           "-DDIODON_USE_CHAMELEON=ON")
-       #:phases (modify-phases %standard-phases
-                               (add-after 'unpack 'chdir
-                                          (lambda _
-                                            (chdir "cpp"))))
-
-       ;; FIXME: don't know how to run Diodon tests for now
-       #:tests? #f))
-
-    (inputs `(("zlib" ,zlib)
-              ("hdf5" , hdf5-parallel-openmpi)
-              ("lapack" ,mkl)
-              ("fmr" ,fmr+mpi)
-              ("chameleon" ,chameleon+mkl+mt)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)
-                     ("ssh" ,openssh)))
-
-    (synopsis "Librairies for Multivariate Data Analysis and
-Dimensionality Reduction for very large datasets")
-    (description
-     "Librairies for Multivariate Data Analysis and Dimensionality
-Reduction for very large datasets.")
     (license license:cecill-c)))
 
 (define-public cppdiodon
@@ -245,22 +158,22 @@ Reduction for very large datasets.")
     (version "0")
     (home-page "https://gitlab.inria.fr/diodon/cppdiodon")
     (source (git-checkout (url "git@gitlab.inria.fr:diodon/cppdiodon.git")
-                          (branch "master")))     ;or (commit "1234abc")
+			  (branch "master")))     ;or (commit "1234abc")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                           "-DDIODON_USE_INTERNAL_FMR=OFF")
+			   "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			   "-DDIODON_USE_INTERNAL_FMR=OFF")
        ;; FIXME: trouble with STARPU /tmp dir.
        #:tests? #f))
 
     (inputs `(("zlib" ,zlib)
-              ("bzip2" , bzip2)
-              ("hdf5" , hdf5-1.10)
-              ("lapack" ,mkl)
-              ("fmr" ,fmr)))
+	      ("bzip2" , bzip2)
+	      ("hdf5" , hdf5-1.10)
+	      ("lapack" ,mkl)
+	      ("fmr" ,fmr)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)))
+		     ("gfortran" ,gfortran)))
 
     (synopsis "Librairies for Multivariate Data Analysis and
 Dimensionality Reduction for very large datasets")
@@ -290,25 +203,25 @@ Reduction for very large datasets.")
     (version "0")
     (home-page "https://gitlab.inria.fr/diodon/cppdiodon")
     (source (git-checkout (url "git@gitlab.inria.fr:diodon/cppdiodon.git")
-                          (branch "master")))     ;or (commit "1234abc")
+			  (branch "master")))     ;or (commit "1234abc")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                           "-DDIODON_USE_INTERNAL_FMR=OFF"
-                           "-DDIODON_USE_CHAMELEON=ON")
+			   "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			   "-DDIODON_USE_INTERNAL_FMR=OFF"
+			   "-DDIODON_USE_CHAMELEON=ON")
        ;; FIXME: trouble with STARPU /tmp dir.
        #:tests? #f))
 
     (inputs `(("zlib" ,zlib)
-              ("bzip2" , bzip2)
-              ("hdf5" , hdf5-parallel-openmpi)
-              ("lapack" ,mkl)
-              ("chameleon" ,chameleon+mkl+mt)
-              ("fmr" ,fmr+mpi)))
+	      ("bzip2" , bzip2)
+	      ("hdf5" , hdf5-parallel-openmpi)
+	      ("lapack" ,mkl)
+	      ("chameleon" ,chameleon+mkl+mt)
+	      ("fmr" ,fmr+mpi)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("gfortran" ,gfortran)
-                     ("ssh" ,openssh)))
+		     ("gfortran" ,gfortran)
+		     ("ssh" ,openssh)))
 
     (synopsis "Librairies for Multivariate Data Analysis and
 Dimensionality Reduction for very large datasets")
