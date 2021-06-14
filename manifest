@@ -1,0 +1,15 @@
+;;; This is -*- Scheme -*-.
+;;;
+;;; This module extends GNU Guix and is licensed under the same terms, those
+;;; of the GNU GPL version 3 or (at your option) any later version.
+;;;
+;;; Copyright © 2021 Inria
+
+;;; Manifest for continuous integration of Guix-HPC-non-free at
+;;; <https://guix.bordeaux.inria.fr>.
+
+(use-modules (gnu packages) (guix) (guix profiles))
+
+(specifications->manifest
+ '("chameleon-cuda" "chameleon-mkl-mt" "chameleon-cuda-mkl-mt"
+   "starpu-cuda" "starpu-cuda-fxt"))
