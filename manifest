@@ -8,8 +8,18 @@
 ;;; Manifest for continuous integration of Guix-HPC-non-free at
 ;;; <https://guix.bordeaux.inria.fr>.
 
-(use-modules (gnu packages) (guix) (guix profiles))
 
-(specifications->manifest
- '("chameleon-cuda" "chameleon-mkl-mt" "chameleon-cuda-mkl-mt"
-   "starpu-cuda" "starpu-cuda-fxt"))
+(use-modules (gnu packages) (guix) (guix profiles) (guix transformations))
+
+(define transform
+  (options->transformation
+   '((with-input . "openblas=mkl"))))
+
+(concatenate-manifests
+ (list (packages->manifest
+        (map (compose transform specification->package) '("chameleon" "chameleon-cuda"
+                                                          "pastix" "pastix-cuda")))
+       (specifications->manifest
+        '("chameleon-cuda" "chameleon-mkl-mt" "chameleon-cuda-mkl-mt"
+          "pastix-cuda"
+          "starpu-cuda" "starpu-cuda-fxt"))))
