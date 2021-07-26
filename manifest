@@ -18,8 +18,10 @@
 (concatenate-manifests
  (list (packages->manifest
         (map (compose transform specification->package) '("chameleon" "chameleon-cuda"
-                                                          "pastix" "pastix-cuda")))
+                                                          "pastix" "pastix-cuda"
+                                                          "qr_mumps" "qr_mumps-cuda")))
        (specifications->manifest
         '("chameleon-cuda" "chameleon-mkl-mt" "chameleon-cuda-mkl-mt"
           "pastix-cuda"
+          "qr_mumps-cuda"
           "starpu-cuda" "starpu-cuda-fxt"))))
