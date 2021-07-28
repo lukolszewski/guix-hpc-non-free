@@ -18,6 +18,7 @@
 (concatenate-manifests
  (list (packages->manifest
         (map (compose transform specification->package) '("chameleon" "chameleon-cuda"
+                                                          "fabulous"
                                                           "pastix" "pastix-cuda"
                                                           "qr_mumps" "qr_mumps-cuda"
                                                           "scalfmm")))
