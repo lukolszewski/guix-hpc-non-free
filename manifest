@@ -13,13 +13,14 @@
 
 (define openblas->mkl
   (options->transformation
-   '((with-input . "openblas=mkl"))))
+   '((with-input . "openblas=mkl")
+     (with-input . "mumps-openmpi=mumps-mkl-openmpi")))) ;for maphys++
 
 (concatenate-manifests
  (list (packages->manifest
         (map (compose openblas->mkl specification->package)
              '("chameleon" "chameleon-cuda"
-               "fabulous"
+               "fabulous" "maphys++"
                "pastix" "pastix-cuda"
                "qr_mumps" "qr_mumps-cuda"
                "scalfmm")))
