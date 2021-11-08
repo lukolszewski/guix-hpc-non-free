@@ -1,6 +1,8 @@
 Proprietary HPC Software for GNU Guix
 =========================================
 
+[![pipeline status](https://guix.bordeaux.inria.fr/jobset/guix-hpc-non-free/badge.svg)](https://guix.bordeaux.inria.fr/jobset/guix-hpc-non-free)
+
 This repository contains [GNU Guix](https://gnu.org/s/guix) packages for
 high-performance computing (HPC), specifically [_non-free
 software_](https://www.gnu.org/philosophy/free-software-even-more-important.html),
