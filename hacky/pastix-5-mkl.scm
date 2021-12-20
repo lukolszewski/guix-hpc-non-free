@@ -39,7 +39,7 @@ CF90PROG    = gfortran -ffree-form -g
 CXXPROG     = g++ -g
 
 MCFPROG     = mpif90 -g
-CF90CCPOPT  = -ffree-form -x f95-cpp-input
+CF90CCPOPT  = -ffree-form -x f95-cpp-input -fallow-argument-mismatch
 # Compilation options for optimization (make expor)
 CCFOPT      = -O3
 # Compilation options for debug (make | make debug)
