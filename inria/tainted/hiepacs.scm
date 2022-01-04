@@ -249,7 +249,8 @@ Reduction for very large datasets.")
                                                              (chdir "src"))))
                         #:tests? #f))
 
-   (inputs `(("mpi" ,openmpi)))
+   (inputs `(("mpi" ,openmpi)
+             ("hdf5" , hdf5-parallel-openmpi)))
 
    (synopsis "Compute pairwise distances between reads as edit distances")
    (description
