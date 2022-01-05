@@ -84,8 +84,8 @@
   (package
    (name "fmr")
    (version "0")
-   (home-page "https://gitlab.inria.fr/compose/oldstack/fmr")
-   (source (git-checkout (url "git@gitlab.inria.fr:compose/oldstack/fmr.git")
+   (home-page "https://gitlab.inria.fr/compose/legacystack/fmr")
+   (source (git-checkout (url "https://gitlab.inria.fr/compose/legacystack/fmr.git")
                          (recursive? #t)))
    (build-system cmake-build-system)
    (arguments
@@ -125,8 +125,8 @@ approximations based on randomized techniques.")
   (package
    (name "fmr-mpi")
    (version "0")
-   (home-page "https://gitlab.inria.fr/compose/oldstack/fmr")
-   (source (git-checkout (url "git@gitlab.inria.fr:compose/oldstack/fmr.git")
+   (home-page "https://gitlab.inria.fr/compose/legacystack/fmr")
+   (source (git-checkout (url "https://gitlab.inria.fr/compose/legacystack/fmr.git")
                          (recursive? #t)))
    (build-system cmake-build-system)
    (arguments
