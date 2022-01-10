@@ -4,7 +4,7 @@
 ;;; Note that this module provides packages that depend on "non-free"
 ;;; software, which denies users the ability to study and modify it.
 ;;;
-;;; Copyright © 2018, 2019, 2020 Inria
+;;; Copyright © 2018, 2019, 2020, 2022 Inria
 
 (define-module (inria tainted storm)
   #:use-module (guix)
@@ -70,7 +70,8 @@ implicit GCC."
     (inherit starpu)
     (name "starpu-cuda")
     (native-inputs
-     `(("gfortran" ,gfortran-sans-libstdc++)
+     `(("gcc" ,gcc-8)                             ;CUDA requires GCC <= 8
+       ("gfortran" ,gfortran-sans-libstdc++)
        ,@(alist-delete "gfortran" (package-native-inputs starpu))))
     (inputs
      `(("cuda" ,cuda)

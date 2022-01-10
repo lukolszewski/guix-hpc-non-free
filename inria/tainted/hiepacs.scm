@@ -4,7 +4,7 @@
 ;;; Note that this module provides packages that depend on "non-free"
 ;;; software, which denies users the ability to study and modify it.
 ;;;
-;;; Copyright © 2019 Inria
+;;; Copyright © 2019, 2022 Inria
 
 (define-module (inria tainted hiepacs)
   #:use-module (guix)
@@ -36,6 +36,9 @@
     (substitute-keyword-arguments (package-arguments chameleon)
                                   ((#:configure-flags flags '())
                                    `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
+   (native-inputs
+    `(("gcc" ,gcc-8)                             ;CUDA requires GCC <= 8
+      ,@(package-native-inputs chameleon)))
    (inputs
     `(("cuda" ,cuda)
       ,@(package-inputs chameleon)))
@@ -61,6 +64,9 @@
     (substitute-keyword-arguments (package-arguments chameleon+mkl+mt)
                                   ((#:configure-flags flags '())
                                    `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
+   (native-inputs
+    `(("gcc" ,gcc-8)                             ;CUDA requires GCC <= 8
+      ,@(package-native-inputs chameleon+mkl+mt)))
    (inputs
     `(("cuda" ,cuda)
       ,@(package-inputs chameleon+mkl+mt)))
@@ -75,6 +81,9 @@
     (substitute-keyword-arguments (package-arguments pastix)
                                   ((#:configure-flags flags '())
                                    `(cons "-DPASTIX_WITH_CUDA=ON" ,flags))))
+   (native-inputs
+    `(("gcc" ,gcc-8)                             ;CUDA requires GCC <= 8
+      ,@(package-native-inputs pastix)))
    (inputs
     `(("cuda" ,cuda)
       ("starpu" ,starpu+cuda)
