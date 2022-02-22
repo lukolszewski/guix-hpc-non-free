@@ -251,7 +251,7 @@ Reduction for very large datasets.")
     '(#:configure-flags `("-DBUILD_SHARED_LIBS=OFF"
                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
                           "-DDISSEQ=ON"
-                          "-DMPI_DISSEQ=ON")
+                          "-DMPIDISSEQ=ON")
                         #:phases (modify-phases %standard-phases
                                                 (add-after 'unpack 'chdir
                                                            (lambda _
