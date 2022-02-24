@@ -238,33 +238,3 @@ Dimensionality Reduction for very large datasets")
     "Librairies for Multivariate Data Analysis and Dimensionality
 Reduction for very large datasets.")
    (license license:cecill-c)))
-
-(define-public disseq
-  (package
-   (name "disseq")
-   (version "0")
-   (home-page "https://gitlab.inria.fr/metabarcoding/pairwise_dis")
-   (source (git-checkout (url "git@gitlab.inria.fr:metabarcoding/pairwise_dis.git")
-                         (branch "master")))
-   (build-system cmake-build-system)
-   (arguments
-    '(#:configure-flags `("-DBUILD_SHARED_LIBS=OFF"
-                          "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                          "-DDISSEQ=ON"
-                          "-DMPIDISSEQ=ON")
-                        #:phases (modify-phases %standard-phases
-                                                (add-after 'unpack 'chdir
-                                                           (lambda _
-                                                             (chdir "src"))))
-                        #:tests? #f))
-
-   (inputs `(("mpi" ,openmpi)
-             ("hdf5" , hdf5-parallel-openmpi)))
-
-   (synopsis "Compute pairwise distances between reads as edit distances")
-   (description
-    "This package has been developed for computing exact distances,
-     without heuristics, between all pairs of reads of a NGS
-     sample. This is a first step for supervised or unsupervised clustering
-     of reads in an environmetal sample.")
-   (license license:cecill-c)))
