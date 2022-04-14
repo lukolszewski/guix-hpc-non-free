@@ -20,26 +20,6 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
-(define (gnu-build-system-with-compiler compiler)
-  "Return a variant of GNU-BUILD-SYSTEM that uses COMPILER instead of the
-implicit GCC."
-  (define lower
-    (build-system-lower gnu-build-system))
-
-  (define (lower* . args)
-    (let ((lowered (apply lower args)))
-      (bag
-	(inherit lowered)
-	(build-inputs (map (match-lambda
-			     (("gcc" _ rest ...)
-			      `("compiler" ,compiler ,@rest))
-			     (input input))
-			   (bag-build-inputs lowered))))))
-
-  (build-system
-    (inherit gnu-build-system)
-    (lower lower*)))
-
 (define gfortran-sans-libstdc++
   ;; XXX: Currently gfortran includes a copy of libstdc++ and its headers.
   ;; For some reason, nvcc chokes on those:
