@@ -3,7 +3,7 @@
 ;;; This module extends GNU Guix and is licensed under the same terms, those
 ;;; of the GNU GPL version 3 or (at your option) any later version.
 ;;;
-;;; Copyright © 2021 Inria
+;;; Copyright © 2021, 2022 Inria
 
 ;;; Manifest for continuous integration of Guix-HPC-non-free at
 ;;; <https://guix.bordeaux.inria.fr>.
@@ -28,4 +28,5 @@
         '("chameleon-cuda" "chameleon-mkl-mt" "chameleon-cuda-mkl-mt"
           "pastix-cuda"
           "qr_mumps-cuda"
-          "starpu-cuda" "starpu-cuda-fxt"))))
+          "starpu-cuda" "starpu-cuda-fxt"
+          "medit"))))
