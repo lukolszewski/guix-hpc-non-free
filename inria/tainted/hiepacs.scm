@@ -34,16 +34,14 @@
    (name "chameleon-cuda")
    (arguments
     (substitute-keyword-arguments (package-arguments chameleon)
-                                  ((#:configure-flags flags '())
-                                   `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
+				  ((#:configure-flags flags '())
+				   `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
    (native-inputs
     `(("gcc" ,gcc-8)                             ;CUDA requires GCC <= 8
       ,@(package-native-inputs chameleon)))
-   (inputs
-    `(("cuda" ,cuda)
-      ,@(package-inputs chameleon)))
-   (propagated-inputs `(("starpu" ,starpu+cuda)
-                        ,@(delete `("starpu" ,starpu) (package-inputs chameleon))))))
+   (propagated-inputs `(("cuda" ,cuda)
+			("starpu" ,starpu+cuda)
+			,@(delete `("starpu" ,starpu) (package-inputs chameleon))))))
 
 (define-public chameleon+mkl+mt
   (package
@@ -51,10 +49,10 @@
    (name "chameleon-mkl-mt")
    (arguments
     (substitute-keyword-arguments (package-arguments chameleon)
-                                  ((#:configure-flags flags '())
-                                   `(cons "-DBLA_VENDOR=Intel10_64lp" (cons "-DCBLAS_MT=ON" (cons "-DLAPACKE_MT=ON" ,flags))))))
+				  ((#:configure-flags flags '())
+				   `(cons "-DBLA_VENDOR=Intel10_64lp" (cons "-DCBLAS_MT=ON" (cons "-DLAPACKE_MT=ON" ,flags))))))
    (inputs `(("lapack" ,mkl)
-             ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
+	     ,@(delete `("lapack" ,openblas) (package-inputs chameleon))))))
 
 (define-public chameleon+cuda+mkl+mt
   (package
@@ -62,16 +60,14 @@
    (name "chameleon-cuda-mkl-mt")
    (arguments
     (substitute-keyword-arguments (package-arguments chameleon+mkl+mt)
-                                  ((#:configure-flags flags '())
-                                   `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
+				  ((#:configure-flags flags '())
+				   `(cons "-DCHAMELEON_USE_CUDA=ON" ,flags))))
    (native-inputs
     `(("gcc" ,gcc-8)                             ;CUDA requires GCC <= 8
       ,@(package-native-inputs chameleon+mkl+mt)))
-   (inputs
-    `(("cuda" ,cuda)
-      ,@(package-inputs chameleon+mkl+mt)))
-   (propagated-inputs `(("starpu" ,starpu+cuda)
-                        ,@(delete `("starpu" ,starpu) (package-inputs chameleon+mkl+mt))))))
+   (propagated-inputs `(("cuda" ,cuda)
+			("starpu" ,starpu+cuda)
+			,@(delete `("starpu" ,starpu) (package-inputs chameleon+mkl+mt))))))
 
 (define-public pastix+cuda
   (package
@@ -79,12 +75,12 @@
    (name "pastix-cuda")
    (arguments
     (substitute-keyword-arguments (package-arguments pastix)
-                                  ((#:configure-flags flags '())
-                                   `(cons "-DPASTIX_WITH_CUDA=ON" ,flags))))
+				  ((#:configure-flags flags '())
+				   `(cons "-DPASTIX_WITH_CUDA=ON" ,flags))))
    (native-inputs
     `(("gcc" ,gcc-8)                             ;CUDA requires GCC <= 8
       ,@(package-native-inputs pastix)))
-   (inputs
+   (propagated-inputs
     `(("cuda" ,cuda)
       ("starpu" ,starpu+cuda)
       ,@(delete `("starpu" ,starpu) (package-inputs pastix))))))
@@ -95,22 +91,22 @@
    (version "0")
    (home-page "https://gitlab.inria.fr/compose/legacystack/fmr")
    (source (git-checkout (url "https://gitlab.inria.fr/compose/legacystack/fmr.git")
-                         (recursive? #t)))
+			 (recursive? #t)))
    (build-system cmake-build-system)
    (arguments
     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
-                          "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                          "-DFMR_BUILD_TESTS=ON"
-                          "-DFMR_USE_HDF5=ON")
-                        ;; FIXME: trouble with STARPU /tmp dir.
-                        #:tests? #f))
+			  "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			  "-DFMR_BUILD_TESTS=ON"
+			  "-DFMR_USE_HDF5=ON")
+      ;; FIXME: trouble with STARPU /tmp dir.
+      #:tests? #f))
 
    (inputs `(("zlib" , zlib)
-             ("bzip2" , bzip2)
-             ("hdf5" , hdf5-1.10)
-             ("lapack" ,mkl)))
+	     ("bzip2" , bzip2)
+	     ("hdf5" , hdf5-1.10)
+	     ("lapack" ,mkl)))
    (native-inputs `(("pkg-config" ,pkg-config)
-                    ("gfortran" ,gfortran)))
+		    ("gfortran" ,gfortran)))
    (synopsis "Fast and accurate Methods for Randomized numerical linear algebra")
    (description
     "This project provides routines for performing low-rank matrix
@@ -136,25 +132,25 @@ approximations based on randomized techniques.")
    (version "0")
    (home-page "https://gitlab.inria.fr/compose/legacystack/fmr")
    (source (git-checkout (url "https://gitlab.inria.fr/compose/legacystack/fmr.git")
-                         (recursive? #t)))
+			 (recursive? #t)))
    (build-system cmake-build-system)
    (arguments
     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
-                          "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                          "-DFMR_BUILD_TESTS=ON"
-                          "-DFMR_USE_HDF5=ON"
-                          "-DFMR_USE_CHAMELEON=ON")
-                        ;; FIXME: trouble with STARPU /tmp dir.
-                        #:tests? #f))
+			  "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			  "-DFMR_BUILD_TESTS=ON"
+			  "-DFMR_USE_HDF5=ON"
+			  "-DFMR_USE_CHAMELEON=ON")
+      ;; FIXME: trouble with STARPU /tmp dir.
+      #:tests? #f))
 
    (inputs `(("zlib" , zlib)
-             ("bzip2" , bzip2)
-             ("hdf5" , hdf5-parallel-openmpi)
-             ("lapack" ,mkl)
-             ("chameleon" ,chameleon+mkl+mt)))
+	     ("bzip2" , bzip2)
+	     ("hdf5" , hdf5-parallel-openmpi)
+	     ("lapack" ,mkl)
+	     ("chameleon" ,chameleon+mkl+mt)))
    (native-inputs `(("pkg-config" ,pkg-config)
-                    ("gfortran" ,gfortran)
-                    ("ssh" ,openssh)))
+		    ("gfortran" ,gfortran)
+		    ("ssh" ,openssh)))
    (synopsis "Fast and accurate Methods for Randomized numerical linear algebra")
    (description
     "This project provides routines for performing low-rank matrix
@@ -167,22 +163,22 @@ approximations based on randomized techniques.")
    (version "0")
    (home-page "https://gitlab.inria.fr/diodon/cppdiodon")
    (source (git-checkout (url "git@gitlab.inria.fr:diodon/cppdiodon.git")
-                         (branch "master")))     ;or (commit "1234abc")
+			 (branch "master")))     ;or (commit "1234abc")
    (build-system cmake-build-system)
    (arguments
     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                          "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                          "-DDIODON_USE_INTERNAL_FMR=OFF")
-                        ;; FIXME: trouble with STARPU /tmp dir.
-                        #:tests? #f))
+			  "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			  "-DDIODON_USE_INTERNAL_FMR=OFF")
+      ;; FIXME: trouble with STARPU /tmp dir.
+      #:tests? #f))
 
    (inputs `(("zlib" ,zlib)
-             ("bzip2" , bzip2)
-             ("hdf5" , hdf5-1.10)
-             ("lapack" ,mkl)
-             ("fmr" ,fmr)))
+	     ("bzip2" , bzip2)
+	     ("hdf5" , hdf5-1.10)
+	     ("lapack" ,mkl)
+	     ("fmr" ,fmr)))
    (native-inputs `(("pkg-config" ,pkg-config)
-                    ("gfortran" ,gfortran)))
+		    ("gfortran" ,gfortran)))
 
    (synopsis "Librairies for Multivariate Data Analysis and
 Dimensionality Reduction for very large datasets")
@@ -212,25 +208,25 @@ Reduction for very large datasets.")
    (version "0")
    (home-page "https://gitlab.inria.fr/diodon/cppdiodon")
    (source (git-checkout (url "git@gitlab.inria.fr:diodon/cppdiodon.git")
-                         (branch "master")))     ;or (commit "1234abc")
+			 (branch "master")))     ;or (commit "1234abc")
    (build-system cmake-build-system)
    (arguments
     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
-                          "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                          "-DDIODON_USE_INTERNAL_FMR=OFF"
-                          "-DDIODON_USE_CHAMELEON=ON")
-                        ;; FIXME: trouble with STARPU /tmp dir.
-                        #:tests? #f))
+			  "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
+			  "-DDIODON_USE_INTERNAL_FMR=OFF"
+			  "-DDIODON_USE_CHAMELEON=ON")
+      ;; FIXME: trouble with STARPU /tmp dir.
+      #:tests? #f))
 
    (inputs `(("zlib" ,zlib)
-             ("bzip2" , bzip2)
-             ("hdf5" , hdf5-parallel-openmpi)
-             ("lapack" ,mkl)
-             ("chameleon" ,chameleon+mkl+mt)
-             ("fmr" ,fmr+mpi)))
+	     ("bzip2" , bzip2)
+	     ("hdf5" , hdf5-parallel-openmpi)
+	     ("lapack" ,mkl)
+	     ("chameleon" ,chameleon+mkl+mt)
+	     ("fmr" ,fmr+mpi)))
    (native-inputs `(("pkg-config" ,pkg-config)
-                    ("gfortran" ,gfortran)
-                    ("ssh" ,openssh)))
+		    ("gfortran" ,gfortran)
+		    ("ssh" ,openssh)))
 
    (synopsis "Librairies for Multivariate Data Analysis and
 Dimensionality Reduction for very large datasets")
