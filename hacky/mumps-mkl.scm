@@ -92,7 +92,7 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                            `((,scotch "" "-Dscotch")))
                           ((ptscotch _)
                            `((,ptscotch
-                              "-lptesmumps -lptscotch -lptscotcherr "
+                              "-lesmumps -lptscotch -lptscotcherr "
                               "-Dptscotch")))))))))))))
    (synopsis "Multifrontal sparse direct solver (compiled with OpenMP
 directives-based multi-threading support and Intel® MKL instead of OpenBLAS)")))
