@@ -9,6 +9,8 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
+  #:use-module (inria hiepacs)
+  #:use-module (inria tadaam)
   #:use-module (srfi srfi-1)
   #:use-module (non-free mkl))
 
@@ -124,6 +126,16 @@ directives-based multi-threading support and Intel® MKL instead of OpenBLAS)"))
                                   #:exec-prefix '("mpirun" "-n" "2"))))))))
    (synopsis "Multifrontal sparse direct solver (compiled with combined MPI and
 OpenMP multi-threading support and Intel® MKL instead of OpenBLAS)")))
+
+(define-public mumps-mkl-openmpi-with-pt-scotch-6
+  (package
+   (inherit mumps-mkl-openmpi)
+   (name "mumps-mkl-openmpi-with-pt-scotch-6")
+   (inputs
+    (modify-inputs (package-inputs mumps-openmpi)
+                   (delete "pt-scotch")
+                   (prepend pt-scotch-6)))))
+
 
 (define-public mumps-mkl-metis-openmpi
   (package
