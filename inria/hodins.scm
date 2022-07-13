@@ -41,7 +41,7 @@
        ,@(delete "-DCMAKE_C_FLAGS=-O2 -g -fcommon" #$cf)))))))
 
 (define-public hodins
-  (let ((commit "5210b6672ccf4a3efa4e58e6a80e272b58e42ab4")
+  (let ((commit "1824710cd71bd542da602a3cc5c0a48bccf8b6a0")
         (revision "0"))
     (package
       (name "hodins")
