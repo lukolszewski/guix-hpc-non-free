@@ -1,7 +1,7 @@
 ;;; This module extends GNU Guix and is licensed under the same terms, those
 ;;; of the GNU GPL version 3 or (at your option) any later version.
 ;;;
-;;; Copyright © 2020 Inria
+;;; Copyright © 2020, 2022 Inria
 
 (define-module (hacky mumps-mkl)
   #:use-module (guix packages)
@@ -24,78 +24,91 @@
    (arguments
     (substitute-keyword-arguments
      (package-arguments mumps)
-     (
-      (#:phases phases)
-      `(modify-phases ,phases
-                      (replace 'configure
-                               (lambda* (#:key inputs #:allow-other-keys)
-                                        (call-with-output-file "Makefile.inc"
-                                          (lambda (port)
-                                            (format port "
-PLAT         =
-LIBEXT       = .a
-OUTC         = -o
-OUTF         = -o
-RM           = rm -f~:[
-CC           = gcc -fopenmp
-FC           = gfortran -fopenmp
-FL           = gfortran -fopenmp
-INCSEQ       = -I$(topdir)/libseq
-LIBSEQ       = $(topdir)/libseq/libmpiseq.a
-LIBSEQNEEDED = libseqneeded~;
-CC           = mpicc -fopenmp
-FC           = mpifort -fopenmp
-FL           = mpifort -fopenmp~]
-AR           = ar vr # rules require trailing space, ugh...
-RANLIB       = ranlib
-BLASDIR      = ~a
-LIBBLAS      = -Wl,-rpath=$(BLASDIR) -Wl,-rpath='$$ORIGIN' -L$(BLASDIR)
-LIBBLAS     += -L${BLASDIR}/lib/intel64 -Wl,--no-as-needed -lmkl_gf_lp64
-LIBBLAS     += -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl~@[
-SCALAPDIR    = ~a
-SCALAP       = -Wl,-rpath=$(SCALAPDIR) -Wl,-rpath='$$ORIGIN' -L$(SCALAPDIR)
-SCALAP      += -lscalapack~]
-LIBOTHERS    = -pthread
-CDEFS        = -DAdd_
-PIC          = -fPIC
-OPTF         = -O2 -DALLOW_NON_INIT -DBLR_MT -fallow-argument-mismatch $(PIC)
-OPTL         = -O2 $(PIC)
-OPTC         = -O2 $(PIC)
-INCS         = $(INCSEQ)
-LIBS         = $(SCALAP) $(LIBSEQ)
-LPORDDIR     = $(topdir)/PORD/lib
-IPORD        = -I$(topdir)/PORD/include
-LPORD        = $(LPORDDIR)/libpord.a
-ORDERINGSF   = -Dpord~@[
-METISDIR     = ~a
-IMETIS       = -I$(METISDIR)/include
-LMETIS       = -Wl,-rpath $(METISDIR)/lib -L$(METISDIR)/lib -lmetis
-ORDERINGSF  += -Dmetis~]~@[~:{
-SCOTCHDIR    = ~a
-ISCOTCH      = -I$(SCOTCHDIR)/include
-LSCOTCH      = -Wl,-rpath $(SCOTCHDIR)/lib -L$(SCOTCHDIR)/lib ~a-lesmumps
-LSCOTCH     += -lscotch -lscotcherr
-ORDERINGSF  += ~a~}~]
-ORDERINGSC   = $(ORDERINGSF)
-LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH) $(LIBSEQ)
-IORDERINGSF  = $(ISCOTCH)
-IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
-                        (assoc-ref inputs "mpi")
-                        (assoc-ref inputs "blas")
-                        (assoc-ref inputs "scalapack")
-                        (assoc-ref inputs "metis")
-                        (match (list (assoc-ref inputs "pt-scotch")
-                                     (assoc-ref inputs "scotch"))
-                          ((#f #f)
-                           #f)
-                          ((#f scotch)
-                           `((,scotch "" "-Dscotch")))
-                          ((ptscotch _)
-                           `((,ptscotch
-                              "-lesmumps -lptscotch -lptscotcherr "
-                              "-Dptscotch")))))))))))))
-   (synopsis "Multifrontal sparse direct solver (compiled with OpenMP
-directives-based multi-threading support and Intel® MKL instead of OpenBLAS)")))
+     ((#:phases phases)
+      `(modify-phases
+        ,phases
+        (replace 'configure
+                 (lambda*
+                  (#:key inputs outputs #:allow-other-keys)
+                  (call-with-output-file "Makefile.inc"
+                    (lambda (port)
+                      (format port "
+PLAT          =
+LIBEXT        = .a
+LIBEXT_SHARED = .so
+OUTC          = -o
+OUTF          = -o
+BLASDIR       = ~a
+LIBBLAS       = -Wl,-rpath=$(BLASDIR)/lib -Wl,-rpath='$$ORIGIN'
+LIBBLAS      += -L${BLASDIR}/lib/intel64 -Wl,--no-as-needed -lmkl_gf_lp64
+LIBBLAS      += -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl
+OPTF          = -DGEMMT_AVAILABLE~@[
+SCALAPDIR     = ~a
+SCALAP        = -Wl,-rpath=$(SCALAPDIR)/lib -Wl,-rpath='$$ORIGIN'
+SCALAP       += -L$(SCALAPDIR)/lib -lscalapack~]
+RM            = rm -f~:[
+CC            = gcc
+FC            = gfortran
+FL            = gfortran
+INCSEQ        = -I$(topdir)/libseq
+LIBSEQ        = $(LAPACK) -L$(topdir)/libseq -lmpiseq
+LIBSEQNEEDED  = libseqneeded
+INCS          = $(INCSEQ)
+LIBS          = $(LIBSEQ)~;
+CC            = mpicc
+FC            = mpifort
+FL            = mpifort
+INCPAR        =
+LIBPAR        = $(SCALAP) $(LAPACK)
+LIBSEQNEEDED  = 
+INCS          = $(INCPAR)
+LIBS          = $(LIBPAR)~]
+AR            = ar vr # rules require trailing space, ugh...
+RANLIB        = ranlib
+LIBOTHERS     = -pthread
+CDEFS         = -DAdd_
+PIC           = -fPIC
+FPIC_OPT      = $(PIC)
+RPATH_OPT     = -Wl,-rpath,~a/lib
+OPTF         += -O2 -fopenmp -DALLOW_NON_INIT -DBLR_MT
+OPTF         += -fallow-argument-mismatch $(PIC)
+OPTL          = -O2 -fopenmp $(PIC)
+OPTC          = -O2 -fopenmp $(PIC)
+LPORDDIR      = $(topdir)/PORD/lib
+IPORD         = -I$(topdir)/PORD/include
+LPORD         = $(LPORDDIR)/libpord.a
+ORDERINGSF    = -Dpord~@[
+METISDIR      = ~a
+IMETIS        = -I$(METISDIR)/include
+LMETIS        = -Wl,-rpath $(METISDIR)/lib -L$(METISDIR)/lib -lmetis
+ORDERINGSF   += -Dmetis~]~@[~:{
+SCOTCHDIR     = ~a
+ISCOTCH       = -I$(SCOTCHDIR)/include
+LSCOTCH       = -Wl,-rpath $(SCOTCHDIR)/lib -L$(SCOTCHDIR)/lib ~a -lesmumps
+LSCOTCH      += -lscotch -lscotcherr
+ORDERINGSF   += ~a~}~]
+ORDERINGSC    = $(ORDERINGSF)
+LORDERINGS    = $(LPORD) $(LMETIS) $(LSCOTCH)
+IORDERINGSF   = $(ISCOTCH)
+IORDERINGSC   = $(IPORD) $(IMETIS) $(ISCOTCH)"
+                              (assoc-ref inputs "mkl")
+                              (assoc-ref inputs "scalapack")
+                              (->bool (which "mpicc"))  ;; MPI support enabled?
+                              (assoc-ref outputs "out")
+                              (assoc-ref inputs "metis")
+                              (match
+                               (list
+                                (assoc-ref inputs "pt-scotch")
+                                (assoc-ref inputs "scotch"))
+                               ((#f #f)
+                                #f)
+                               ((#f scotch)
+                                `((,scotch "" "-Dscotch")))
+                               ((ptscotch _)
+                                `((,ptscotch
+                                   "-lesmumps -lptscotch -lptscotcherr "
+                                   "-Dptscotch")))))))))))))
+   (synopsis "Multifrontal sparse direct solver (with Intel® MKL)")))
 
 (define-public mumps-mkl-metis
   (package
@@ -124,18 +137,7 @@ directives-based multi-threading support and Intel® MKL instead of OpenBLAS)"))
                                (lambda _
                                  ((assoc-ref ,phases 'check)
                                   #:exec-prefix '("mpirun" "-n" "2"))))))))
-   (synopsis "Multifrontal sparse direct solver (compiled with combined MPI and
-OpenMP multi-threading support and Intel® MKL instead of OpenBLAS)")))
-
-(define-public mumps-mkl-openmpi-with-pt-scotch-6
-  (package
-   (inherit mumps-mkl-openmpi)
-   (name "mumps-mkl-openmpi-with-pt-scotch-6")
-   (inputs
-    (modify-inputs (package-inputs mumps-openmpi)
-                   (delete "pt-scotch")
-                   (prepend pt-scotch-6)))))
-
+   (synopsis "Multifrontal sparse direct solver (with MPI and Intel® MKL)")))
 
 (define-public mumps-mkl-metis-openmpi
   (package
@@ -143,3 +145,13 @@ OpenMP multi-threading support and Intel® MKL instead of OpenBLAS)")))
    (name "mumps-mkl-metis-openmpi")
    (inputs
     (alist-delete "pt-scotch" (package-inputs mumps-mkl-openmpi)))))
+
+
+(define-public mumps-mkl-openmpi-with-pt-scotch-6
+  (package
+   (inherit mumps-mkl-openmpi)
+   (name "mumps-mkl-openmpi-with-pt-scotch-6")
+   (inputs
+    (modify-inputs (package-inputs mumps-mkl-openmpi)
+                   (delete "pt-scotch")
+                   (prepend pt-scotch-6)))))
