@@ -146,6 +146,13 @@ IORDERINGSC   = $(IPORD) $(IMETIS) $(ISCOTCH)"
    (inputs
     (alist-delete "pt-scotch" (package-inputs mumps-mkl-openmpi)))))
 
+(define-public mumps-mkl-scotch32-openmpi
+  (package
+   (inherit mumps-mkl-openmpi)
+   (name "mumps-mkl-scotch32-openmpi")
+   (inputs
+    `(("scotch" ,scotch32)
+      ,@(alist-delete "pt-scotch" (package-inputs mumps-mkl-openmpi))))))
 
 (define-public mumps-mkl-openmpi-with-pt-scotch-6
   (package
