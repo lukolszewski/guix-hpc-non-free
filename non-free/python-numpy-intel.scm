@@ -316,7 +316,7 @@ include_dirs = ~:*~a/include~%" #$(this-package-input "mkl"))))))
               ;; Don't try to call '/bin/true' specifically.
               (substitute* "numpy/core/tests/test_cpu_features.py"
                 (("/bin/true") (search-input-file inputs "bin/true")))))
-          (replace 'check
+          (delete 'check
             ))))
     (native-inputs
      (list python-cython
