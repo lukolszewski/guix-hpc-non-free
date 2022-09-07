@@ -7,6 +7,7 @@
 ;;; experimentation.  As such, we kindly invite you not to share it.
 ;;;
 ;;; Copyright © 2018, 2019, 2020 Inria
+;;; Copyright © 2022 Lukasz Olszewski <dev@lukaszolszewski.info>
 
 (define-module (non-free cuda)
   #:use-module (guix)
@@ -147,6 +148,78 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
      (cuda-source
       "https://developer.download.nvidia.com/compute/cuda/11.0.3/local_installers/cuda_11.0.3_450.51.06_linux.run"
       "1h4c69nfrgm09jzv8xjnjcvpq8n4gnlii17v3wzqry5d13jc8ydh"))
+    (outputs '("out"))                         ;XXX: no documentation for now
+    (arguments
+     (substitute-keyword-arguments (package-arguments cuda-8.0)
+       ((#:modules modules)
+        `((guix build utils)
+          (guix build gnu-build-system)
+          (ice-9 match)
+          (ice-9 ftw)))                           ;for 'scandir'
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'unpack
+             (lambda* (#:key inputs #:allow-other-keys)
+               (define libc
+                 (assoc-ref inputs "libc"))
+               (define ld.so
+                 (string-append libc ,(glibc-dynamic-linker)))
+
+               (let ((source (assoc-ref inputs "source")))
+                 (invoke "sh" source "--keep" "--noexec")
+                 (chdir "pkg")
+                 #t)))
+           (add-after 'unpack 'remove-superfluous-stuff
+             (lambda _
+               ;; Remove things we have no use for.
+               (with-directory-excursion "builds"
+                 (for-each delete-file-recursively
+                           '("nsight_compute" "nsight_systems" "cuda_gdb")))
+               #t))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (define (copy-from-directory directory)
+                   (for-each (lambda (entry)
+                               (define sub-directory
+                                 (string-append directory "/" entry))
+
+                               (define target
+                                 (string-append out "/" (basename entry)))
+
+                               (when (file-exists? sub-directory)
+                                 (copy-recursively sub-directory target)))
+                             '("bin" "targets/x86_64-linux/lib"
+                               "targets/x86_64-linux/include"
+                               "nvvm/bin" "nvvm/include"
+                               "nvvm/lib64")))
+
+                 (setenv "COLUMNS" "200")         ;wide backtraces!
+                 (with-directory-excursion "builds"
+                   (for-each copy-from-directory
+                             (scandir "." (match-lambda
+                                            ((or "." "..") #f)
+                                            (_ #t))))
+
+                   ;; 'cicc' needs that directory.
+                   (copy-recursively "cuda_nvcc/nvvm/libdevice"
+                                     (string-append out "/nvvm/libdevice")))
+                 #t)))
+           ;; XXX: No documentation for now.
+           (delete 'move-documentation)))))
+    (native-inputs
+     `(("which" ,which)
+       ,@(package-native-inputs cuda-8.0)))))
+
+(define-public cuda-11.6
+  (package
+    (inherit cuda-8.0)
+    (version "11.6.0")
+    (source
+     (cuda-source
+      ;;; please note nvidia requires registration to download the latest files so this refers to local path
+      "/media/Data/software/cuda_11.6.0_510.39.01_linux.run"
+      "10wcv42ljp7hz1k0wzgwb4hi8834rfipzdc01428c1wpcdnxm0qp"))
     (outputs '("out"))                         ;XXX: no documentation for now
     (arguments
      (substitute-keyword-arguments (package-arguments cuda-8.0)

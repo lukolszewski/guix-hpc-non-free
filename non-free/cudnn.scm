@@ -7,6 +7,7 @@
 ;;; experimentation.  As such, we kindly invite you not to share it.
 ;;;
 ;;; Copyright © 2018, 2019, 2020 Inria
+;;; Copyright © 2022 Lukasz Olszewski <dev@lukaszolszewski.info>
 
 (define-module (non-free cudnn)
   #:use-module (guix)
@@ -132,3 +133,12 @@ neural networks for NVIDIA GPUs, which is proprietary.")
                "1khcn3wldm6dpq7rxjm05r23ji3m31wm1cbcdz6ap79rg7x6n10x")))
 
 (define-public cudnn cudnn-8.0.5)
+
+(define-public cudnn-8.4.1
+  (make-cudnn "8.4.1.50"
+              (cudnn-source
+               ;;; please note nvidia requires registration to download the files so the below specifies local path.
+               "file:///media/Data/software/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz"
+               "00bxqqlkwxhwaqhgjmxbbc39mclrb9q3sk1xvlms9z41dlvx55pc")))
+
+(define-public cudnn cudnn-8.4.1)
