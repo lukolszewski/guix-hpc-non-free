@@ -6,7 +6,7 @@
 ;;; are detrimental to user freedom and to proper scientific review and
 ;;; experimentation.  As such, we kindly invite you not to share it.
 ;;;
-;;; Copyright © 2018, 2019, 2020 Inria
+;;; Copyright © 2018, 2019, 2020, 2022 Inria
 
 (define-module (non-free cuda)
   #:use-module (guix)
@@ -209,6 +209,15 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
     (native-inputs
      `(("which" ,which)
        ,@(package-native-inputs cuda-8.0)))))
+
+(define-public cuda-11.7
+  (package
+    (inherit cuda-11.0)
+    (version "11.7.0")
+    (source
+     (cuda-source
+      "https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run"
+      "1nq47szb31fk1a4glsba8dy2h58vr8z7w3pbzv8bfjb5f0lnla2j"))))
 
 (define-public cuda-10.2
   (package
