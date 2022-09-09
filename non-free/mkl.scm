@@ -154,7 +154,7 @@ reference a C interface.")
                            (install-file lib libdir))
                          (find-files (string-append source-prefix
                                                     "/lib/intel64")
-                                     "\\.so$"))
+                                     "\\.so$|\\.so[/.0-9]+$"))
 
                (copy-recursively (string-append source-prefix "/include")
                                  includedir)
