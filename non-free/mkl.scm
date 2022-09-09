@@ -123,7 +123,7 @@ reference a C interface.")
 	 (replace 'unpack
 		  (lambda* (#:key source #:allow-other-keys)
 ;;;		    (chmod source #o755)
-		    (invoke source "--extract-only")))
+		    (invoke "bash" source "--extract-only")))
          (delete 'configure)
          (delete 'check)
          (delete 'build)
@@ -167,6 +167,7 @@ reference a C interface.")
        #:substitutable? #f))
     (native-inputs
      `(("tar" ,tar)
+       ("bash" ,bash)
        ("gzip" ,gzip)
        ("p7zip", p7zip)))
 
