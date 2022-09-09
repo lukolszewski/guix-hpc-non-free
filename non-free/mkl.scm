@@ -170,6 +170,7 @@ reference a C interface.")
      `(("tar" ,tar)
        ("bash" ,bash)
        ("gzip" ,gzip)
+       ("coreutils" ,coreutils)
        ("p7zip", p7zip)))
 
     ;; 32-bit libraries are not installed.
