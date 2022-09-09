@@ -129,14 +129,13 @@ reference a C interface.")
          (delete 'build)
 	 (add-before 'install 'extract-cups
 	   (lambda _
-	     (mkdir "opt")
 	     (for-each (lambda (cupfile)
 			 (format #t "extracting ~a...~%" cupfile)
-			 let* ((command (string-append "7z x -bd -y " cupfile))
-			       (status (system command)))
-			 (unless (zero? status)
-			   (error (format #f "command '~a' failed with ~a"
-					  command status))))
+			 (let* ((command (string-append "7z x -bd -y " cupfile))
+				(status (system command)))
+			   (unless (zero? status)
+			     (error (format #f "command '~a' failed with ~a"
+					    command status)))))
 		       (find-files "packages" ".cup$"))
 	     #t))
 	 (replace 'install
