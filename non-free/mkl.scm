@@ -114,8 +114,8 @@ reference a C interface.")
               (uri "file:///media/Data/software/l_onemkl_p_2022.1.0.223_offline.sh")
               (sha256
                (base32
-                "0gjnljgg5h340j3gq2h04mjc3bc4frfvbyy8wr62zran9hy5lcjb")))
-	    (file-name (string-append name "-" version ".sh")))
+                "0gjnljgg5h340j3gq2h04mjc3bc4frfvbyy8wr62zran9hy5lcjb"))
+	      (file-name (string-append name "-" version ".sh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
