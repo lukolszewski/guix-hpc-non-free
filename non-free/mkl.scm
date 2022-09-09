@@ -138,7 +138,8 @@ reference a C interface.")
 			   (unless (zero? status)
 			     (error (format #f "command '~a' failed with ~a"
 					    command status)))))
-		       (find-files "packages" ".cup$"))
+		       (find-files "l_onemkl_p_2022.1.0.223_offline" ".cup$"))
+	     
 	     #t))
 	 (replace 'install
 	   (lambda* (#:key outputs #:allow-other-keys)
