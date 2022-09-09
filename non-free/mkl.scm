@@ -104,3 +104,81 @@ written in either C or C++, as well as in any other language that can
 reference a C interface.")
     (home-page "https://software.intel.com/en-us/mkl")
     (license #f)))                                ;non-free
+
+(define-public mkl
+  (package
+    (name "mkl")
+    (version "2022.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri "file:///media/Data/software/l_onemkl_p_2022.1.0.223_offline.sh")
+              (sha256
+               (base32
+                "0gjnljgg5h340j3gq2h04mjc3bc4frfvbyy8wr62zran9hy5lcjb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+	 (replace 'unpack 'run-to-extract-only
+		  (lambda _
+		    (invoke source "--extract-only")))
+         (delete 'configure)
+         (delete 'check)
+         (delete 'build)
+	 (add-before 'install 'extract-cups
+	   (lambda _
+	     (mkdir "opt")
+	     (for-each (lambda (cupfile)
+			 (format #t "extracting ~a...~%" cupfile)
+			 let* ((command (string-append "7z x -bd -y " cupfile))
+			       (status (system command)))
+			 (unless (zero? status)
+			   (error (format #f "command '~a' failed with ~a"
+					  command status))))
+		       (find-files "packages" ".cup$"))
+	     #t))
+	 (replace 'install
+	   (lambda* (#:key outputs #:allow-other-keys)
+	     (let* ((out (assoc-ref outputs "out"))
+		    (source-prefix (string-append
+				    "_installdir/mkl/"
+				    version))
+		    (bindir (string-append out "/bin"))
+                    (libdir (string-append out "/lib"))
+                    (includedir (string-append out "/include")))
+	       (for-each (lambda (lib)
+                           (install-file lib libdir))
+                         (find-files (string-append source-prefix
+                                                    "/lib/intel64")
+                                     "\\.so$"))
+
+               (copy-recursively (string-append source-prefix "/include")
+                                 includedir)
+               (copy-recursively (string-append source-prefix "/bin/intel64")
+                                 bindir)
+	       (copy-recursively (string-append source-prefix "/lib/pkgconfig")
+                                 (string-append libdir "/pkgconfig"))
+	       (copy-recursively (string-append source-prefix "/lib/cmake")
+                                 (string-append libdir "/cmake"))))))
+       ;; We don't need the tool chain, Coreutils, and all that.
+       #:implicit-inputs? #f
+       ;; Let's not publish or obtain substitutes for that.
+       #:substitutable? #f))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)
+       ("p7zip", p7zip)))
+
+    ;; 32-bit libraries are not installed.
+    (supported-systems '("x86_64-linux"))
+
+    (synopsis "Non-free library of optimized math routines")
+    (description
+     "Intel® Math Kernel Library (MKL) is a proprietary library of highly
+optimized, extensively threaded routines for applications that require
+maximum performance.  The library provides Fortran and C programming language
+interfaces.  Intel MKL C language interfaces can be called from applications
+written in either C or C++, as well as in any other language that can
+reference a C interface.")
+    (home-page "https://software.intel.com/en-us/mkl")
+    (license #f)))
