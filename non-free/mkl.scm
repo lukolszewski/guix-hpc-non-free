@@ -122,7 +122,7 @@ reference a C interface.")
        (modify-phases %standard-phases
 	 (replace 'unpack
 		  (lambda* (#:key source #:allow-other-keys)
-		    (chmod source #o755)
+;;;		    (chmod source #o755)
 		    (invoke source "--extract-only")))
          (delete 'configure)
          (delete 'check)
