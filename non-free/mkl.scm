@@ -114,14 +114,15 @@ reference a C interface.")
               (uri "file:///media/Data/software/l_onemkl_p_2022.1.0.223_offline.sh")
               (sha256
                (base32
-                "0gjnljgg5h340j3gq2h04mjc3bc4frfvbyy8wr62zran9hy5lcjb"))))
+                "0gjnljgg5h340j3gq2h04mjc3bc4frfvbyy8wr62zran9hy5lcjb")))
+	    (file-name (string-append name "-" version ".sh")))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
 	 (replace 'unpack 'run-to-extract-only
 		  (lambda _
-		    (invoke source "--extract-only")))
+		    (invoke (string-append name "-" version ".sh") "--extract-only")))
          (delete 'configure)
          (delete 'check)
          (delete 'build)
