@@ -6,12 +6,8 @@
 ;;; are detrimental to user freedom and to proper scientific review and
 ;;; experimentation.  As such, we kindly invite you not to share it.
 ;;;
-<<<<<<< HEAD
 ;;; Copyright © 2018, 2019, 2020, 2022 Inria
-=======
-;;; Copyright © 2018, 2019, 2020 Inria
 ;;; Copyright © 2022 Lukasz Olszewski <dev@lukaszolszewski.info>
->>>>>>> cuda-early
 
 (define-module (non-free cuda)
   #:use-module (guix)
