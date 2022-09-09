@@ -121,7 +121,7 @@ reference a C interface.")
      `(#:phases
        (modify-phases %standard-phases
 	 (replace 'unpack 'run-to-extract-only
-		  (lambda (#:key source #:allow-other-keys)
+		  (lambda* (#:key source #:allow-other-keys)
 		    (chmod source #o755)
 		    (invoke source "--extract-only")))
          (delete 'configure)
