@@ -163,7 +163,16 @@ reference a C interface.")
 	       (copy-recursively (string-append source-prefix "/lib/pkgconfig")
                                  (string-append libdir "/pkgconfig"))
 	       (copy-recursively (string-append source-prefix "/lib/cmake")
-                                 (string-append libdir "/cmake"))))))
+                                 (string-append libdir "/cmake"))
+               ;;; Now compiler libs too
+	       (for-each (lambda (lib)
+                           (install-file lib libdir))
+                         (find-files (string-append source-prefix
+                                                    "../../compiler/" ,version "/linux/lib")
+                                     "\\.so$|\\.so[/.0-9]+$"))
+	       (copy-recursively (string-append source-prefix "../../compiler/" ,version "/lib/pkgconfig")
+                                 (string-append libdir "/pkgconfig"))
+	       ))))
        ;; We don't need the tool chain, Coreutils, and all that.
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
