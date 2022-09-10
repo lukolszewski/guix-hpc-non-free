@@ -166,6 +166,7 @@ reference a C interface.")
                                  (string-append libdir "/cmake"))
                ;;; Now compiler libs too
 	       (for-each (lambda (lib)
+			   (display lib)
                            (install-file lib libdir))
                          (find-files (string-append source-prefix
                                                     "../../compiler/" ,version "/linux/lib")
