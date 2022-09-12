@@ -17,6 +17,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages elf)
+  #:use-module (guix gexp)  
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages compression)
@@ -191,7 +192,8 @@ reference a C interface.")
              (use-modules (ice-9 ftw)
                           (ice-9 regex)
                           (ice-9 textual-ports))
-             (let* ((libdir (string-append #$output "/lib"))
+             (let* (
+		    (libdir (string-append #$output "/lib"))
                     (bindir (string-append #$output "/bin"))
                     (etcdir (string-append #$output "/etc")))
                
