@@ -185,6 +185,8 @@ reference a C interface.")
 	       )))
          (add-after 'install 'install-copy
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
+ 	     (display "what a shit language.... ")
+	     
              (chdir "..")
              (use-modules (ice-9 ftw)
                           (ice-9 regex)
