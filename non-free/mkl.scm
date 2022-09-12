@@ -16,6 +16,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages compression)
