@@ -195,6 +195,7 @@ reference a C interface.")
                
                ;; ------------------------------
                ;; patchelf
+	       (display "what a shit language.... can;t even show line numbers where an exception is thrown!")
                (let* ((ld.so (string-append #$glibc #$(glibc-dynamic-linker)))
 
                       (rpath (string-join
