@@ -174,20 +174,52 @@ reference a C interface.")
                                                     "/../../compiler/" ,version "/linux/lib")
                                      "\\.so$|\\.so[/.0-9]+$"))
 	       (for-each (lambda (lib)
-			   (display lib)
+         			   (display lib)
                            (install-file lib libdir))
                          (find-files (string-append source-prefix
                                                     "/../../compiler/" ,version "/linux/compiler/lib/intel64_lin/")
                                      "\\.so$|\\.so[/.0-9]+$"))
 	       (copy-recursively (string-append source-prefix "/../../compiler/" ,version "/lib/pkgconfig")
                                  (string-append libdir "/pkgconfig"))
-	       ))))
+	       )))
+         (add-after 'install 'install-copy
+           (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
+             (chdir "..")
+             (use-modules (ice-9 ftw)
+                          (ice-9 regex)
+                          (ice-9 textual-ports))
+             (let* ((libdir (string-append #$output "/lib"))
+                    (bindir (string-append #$output "/bin"))
+                    (etcdir (string-append #$output "/etc")))
+               
+               ;; ------------------------------
+               ;; patchelf
+               (let* ((ld.so (string-append #$glibc #$(glibc-dynamic-linker)))
+
+                      (rpath (string-join
+                              (list "$ORIGIN"
+                                    (string-append #$output "/lib")
+                                    (string-append #$glibc "/lib")
+                                    (string-append #$glib "/lib")
+                                    (string-append #$zlib "/lib")
+                                    (string-append #$gcc:lib "/lib"))
+                              ":")))
+                 (define (patch-elf file)
+                   (format #t "Patching ~a ...~%" file)
+                   (unless (string-contains file ".so")
+                     (invoke "patchelf" "--set-interpreter" ld.so file))
+                   (invoke "patchelf" "--set-rpath" rpath file))
+                 (for-each (lambda (file)
+                             (when (elf-file? file)
+                               (patch-elf file)))
+                           (find-files #$output  ".*\\.so"))))))
+	 )
        ;; We don't need the tool chain, Coreutils, and all that.
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list zlib glibc gcc))
-    (native-inputs (list tar bash gzip gawk coreutils p7zip zlib glibc gcc))
+    (inputs (list zlib glib glibc `(,gcc "lib")))
+    (native-inputs (list tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
     (supported-systems '("x86_64-linux"))
