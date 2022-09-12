@@ -171,6 +171,12 @@ reference a C interface.")
                          (find-files (string-append source-prefix
                                                     "/../../compiler/" ,version "/linux/lib")
                                      "\\.so$|\\.so[/.0-9]+$"))
+	       (for-each (lambda (lib)
+			   (display lib)
+                           (install-file lib libdir))
+                         (find-files (string-append source-prefix
+                                                    "/../../compiler/" ,version "/linux/compiler/lib/intel64_lin/")
+                                     "\\.so$|\\.so[/.0-9]+$"))
 	       (copy-recursively (string-append source-prefix "/../../compiler/" ,version "/lib/pkgconfig")
                                  (string-append libdir "/pkgconfig"))
 	       ))))
@@ -178,6 +184,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
+    (inputs (list glib glibc `(,gcc "lib")))
     (native-inputs
      `(("tar" ,tar)
        ("bash" ,bash)
