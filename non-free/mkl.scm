@@ -219,7 +219,7 @@ reference a C interface.")
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
     (inputs (list zlib glib glibc `(,gcc "lib")))
-    (native-inputs (list tar bash gzip gawk coreutils p7zip))
+    (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
     (supported-systems '("x86_64-linux"))
