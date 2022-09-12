@@ -169,9 +169,9 @@ reference a C interface.")
 			   (display lib)
                            (install-file lib libdir))
                          (find-files (string-append source-prefix
-                                                    "../../compiler/" ,version "/linux/lib")
+                                                    "/../../compiler/" ,version "/linux/lib")
                                      "\\.so$|\\.so[/.0-9]+$"))
-	       (copy-recursively (string-append source-prefix "../../compiler/" ,version "/lib/pkgconfig")
+	       (copy-recursively (string-append source-prefix "/../../compiler/" ,version "/lib/pkgconfig")
                                  (string-append libdir "/pkgconfig"))
 	       ))))
        ;; We don't need the tool chain, Coreutils, and all that.
