@@ -186,7 +186,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list glib glibc `(,gcc "lib")))
+    (inputs (list zlib glibc gcc))
     (native-inputs
      `(("tar" ,tar)
        ("bash" ,bash)
