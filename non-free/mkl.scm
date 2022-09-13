@@ -12,6 +12,7 @@
   #:use-module (guix)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages base)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages bash)
@@ -222,7 +223,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list zlib glib glibc `(,gcc "lib")))
+    (inputs (list zlib glib libc `(,gcc "lib")))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
