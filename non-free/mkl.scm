@@ -17,7 +17,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages elf)
-  #:use-module (guix gexp)  
+  #:use-module (guix gexp)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages compression)
@@ -124,8 +124,8 @@ reference a C interface.")
 	      (file-name (string-append name "-" version ".sh"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
+     (list #:phases
+       #~(modify-phases %standard-phases
 	 (replace 'unpack
 		  (lambda* (#:key source #:allow-other-keys)
 ;;;		    (chmod source #o755)
@@ -186,20 +186,18 @@ reference a C interface.")
 	       )))
          (add-after 'install 'install-copy
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
- 	     (display "what a shit language.... ")
-	     
+ 	     (display "test1")
              (chdir "..")
              (use-modules (ice-9 ftw)
                           (ice-9 regex)
                           (ice-9 textual-ports))
-             (let* ((out (assoc-ref outputs "output"))
-		    (libdir (string-append #$output "/lib"))
+             (let* ((libdir (string-append #$output "/lib"))
                     (bindir (string-append #$output "/bin"))
                     (etcdir (string-append #$output "/etc")))
                
                ;; ------------------------------
                ;; patchelf
-	       (display "what a shit language.... can;t even show line numbers where an exception is thrown!")
+	       (display "test2")
                (let* ((ld.so (string-append #$glibc #$(glibc-dynamic-linker)))
 
                       (rpath (string-join
