@@ -174,15 +174,15 @@ reference a C interface.")
 			   (display lib)
                            (install-file lib libdir))
                          (find-files (string-append source-prefix
-                                                    "/../../compiler/" ,version "/linux/lib")
+                                                    "/../../compiler/" #$version "/linux/lib")
                                      "\\.so$|\\.so[/.0-9]+$"))
 	       (for-each (lambda (lib)
          			   (display lib)
                            (install-file lib libdir))
                          (find-files (string-append source-prefix
-                                                    "/../../compiler/" ,version "/linux/compiler/lib/intel64_lin/")
+                                                    "/../../compiler/" #$version "/linux/compiler/lib/intel64_lin/")
                                      "\\.so$|\\.so[/.0-9]+$"))
-	       (copy-recursively (string-append source-prefix "/../../compiler/" ,version "/lib/pkgconfig")
+	       (copy-recursively (string-append source-prefix "/../../compiler/" #$version "/lib/pkgconfig")
                                  (string-append libdir "/pkgconfig"))
 	       )))
          (add-after 'install 'install-copy
