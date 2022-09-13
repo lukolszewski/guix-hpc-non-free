@@ -11,6 +11,7 @@
 (define-module (non-free mkl)
   #:use-module (guix)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages base)
