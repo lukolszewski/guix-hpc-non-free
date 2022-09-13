@@ -151,7 +151,7 @@ reference a C interface.")
 	     (let* ((out (assoc-ref outputs "out"))
 		    (source-prefix (string-append
 				    "_installdir/mkl/"
-				    ,version))
+				    #$version))
 		    (bindir (string-append out "/bin"))
                     (libdir (string-append out "/lib"))
                     (includedir (string-append out "/include")))
