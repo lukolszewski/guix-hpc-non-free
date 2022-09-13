@@ -18,6 +18,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages tbb)
   #:use-module (guix gexp)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gawk)
@@ -206,6 +207,7 @@ reference a C interface.")
                                     (string-append #$output "/lib")
                                     (string-append #$glibc "/lib")
                                     (string-append #$glib "/lib")
+				    (string-append #$tbb "/lib")
                                     (string-append #$zlib "/lib")
                                     (string-append #$gcc:lib "/lib"))
                               ":")))
@@ -223,7 +225,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list zlib glib glibc `(,gcc "lib")))
+    (inputs (list zlib glib tbb glibc `(,gcc "lib")))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
