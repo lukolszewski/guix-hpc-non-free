@@ -15,6 +15,7 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages base)
   #:use-module (gnu packages cpio)
+  #:use-module (guix git-download)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages elf)
