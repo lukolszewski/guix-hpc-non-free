@@ -26,26 +26,3 @@
 (define inferior
   ;; An inferior representing the above revision.
   (inferior-for-channels channels))
-
-
-(define-public level-zero
-  (package
-    (name "level-zero")
-    (version "1.8.5")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/oneapi-src/level-zero.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1c8a0ijykv17db04d0djrvgj9vdi3ln2nlffh53qkg1np2qm3sjy"))))
-    (build-system cmake-build-system)
-    (arguments '(#:tests? #f))
-    (inputs (list gawk))
-    (synopsis "oneAPI level-zero library")
-    (description "oneAPI component level-zero")
-    (home-page "https://github.com/oneapi-src/level-zero.git")
-    (license expat)))
-
