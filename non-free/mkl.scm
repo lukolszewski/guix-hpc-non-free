@@ -22,6 +22,8 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages tbb)
   #:use-module (guix gexp)
+  #:use-module (gnu packages)
+  #:use-module (guix packages)
   #:use-module (gnu packages gcc)
 ;;  #:use-module (gnu packages libffi)
   #:use-module (gnu packages gawk)
