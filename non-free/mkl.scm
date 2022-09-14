@@ -23,6 +23,7 @@
   #:use-module (gnu packages tbb)
   #:use-module (guix gexp)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages package-management)
