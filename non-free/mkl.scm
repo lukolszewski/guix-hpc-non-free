@@ -261,7 +261,7 @@ reference a C interface.")
                  (define (patch-elf file)
                    (format #t "Patching ~a ...~%" file)
                    (unless (string-contains file ".so")
-                     (invoke "patchelf" "--set-interpreter" ld.so file))
+		     (invoke "patchelf" "--set-interpreter" ld.so file))
                    (invoke "patchelf" "--set-rpath" rpath file))
                  (for-each (lambda (file)
                              (when (elf-file? file)
@@ -272,7 +272,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list zlib glib tbb glibc `(,gcc "lib") elfutils level-zero))
+    (inputs (list zlib glib tbb glibc `(,gcc "lib") elfutils level-zero inferior))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
