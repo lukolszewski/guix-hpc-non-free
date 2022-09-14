@@ -8,7 +8,7 @@
 ;;;
 ;;; Copyright © 2019 Inria
 
-(define-module (completely-free level-zero)
+(define-module (non-free mkl)
   #:use-module (guix)
   #:use-module (guix inferior)
   #:use-module (guix channels)
@@ -25,4 +25,5 @@
 
 (define inferior
   ;; An inferior representing the above revision.
-  (inferior-for-channels channels))
+  (mlambda ()
+    (inferior-for-channels channels)))
