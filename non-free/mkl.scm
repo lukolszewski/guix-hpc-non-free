@@ -42,9 +42,9 @@
          (commit
           "c81457a5883ea43950eb2ecdcbb58a5b144bcd11"))))
 
-;; (define inferior
-;;   ;; An inferior representing the above revision.
-;;   (inferior-for-channels channels))
+(define inferior
+  ;; An inferior representing the above revision.
+  (inferior-for-channels channels))
 
 
 (define-public level-zero
