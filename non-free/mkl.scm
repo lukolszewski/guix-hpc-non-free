@@ -28,26 +28,51 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages maths)
-  #:use-module (guix inferior)
-  #:use-module (guix channels)
-  #:use-module (guix memoization)
-  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
-(define channels
-  ;; This is the old revision from which we want to
-  ;; extract guile-json.
-  (list (channel
-         (name 'guix)
-         (url "https://git.savannah.gnu.org/git/guix.git")
-         (commit
-          "c81457a5883ea43950eb2ecdcbb58a5b144bcd11"))))
+(define-public libffi
+  (package
+    (name "libffi")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "ftp://sourceware.org/pub/libffi/"
+                              name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh"))
+              (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Prevent the build system from passing -march and -mtune to the
+       ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
+       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define out (assoc-ref outputs "out"))
+             (symlink (string-append out "/lib/libffi-3.2.1/include")
+                      (string-append out "/include"))
+             #t)))))
+    (outputs '("out" "debug"))
+    (synopsis "Foreign function call interface library")
+    (description
+     "The libffi library provides a portable, high level programming interface
+to various calling conventions.  This allows a programmer to call any
+function specified by a call interface description at run-time.
 
-(define inferior
-  ;; An inferior representing the above revision.
-  (mlambda ()
-    (inferior-for-channels channels)))
+FFI stands for Foreign Function Interface.  A foreign function interface is
+the popular name for the interface that allows code written in one language
+to call code written in another language.  The libffi library really only
+provides the lowest, machine dependent layer of a fully featured foreign
+function interface.  A layer must exist above libffi that handles type
+conversions for values passed between the two languages.")
+    (home-page "http://sources.redhat.com/libffi/")
 
+    ;; See <https://github.com/atgreen/libffi/blob/master/LICENSE>.
+    (license expat)))
 
 (define-public level-zero
   (package
@@ -272,7 +297,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list zlib glib tbb glibc `(,gcc "lib") elfutils level-zero (lookup-inferior-packages (inferior) "libffi")))
+    (inputs (list zlib glib tbb glibc `(,gcc "lib") elfutils level-zero libffi))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
