@@ -43,7 +43,7 @@
                (base32
                 "1c8a0ijykv17db04d0djrvgj9vdi3ln2nlffh53qkg1np2qm3sjy"))))
     (build-system cmake-build-system)
-;;;    (arguments '(#:configure-flags '("")))
+    (arguments '(#:tests? #f))
     (inputs (list gawk))
     (synopsis "oneAPI level-zero library")
     (description "oneAPI component level-zero")
@@ -248,8 +248,7 @@ reference a C interface.")
        ;; We don't need the tool chain, Coreutils, and all that.
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
-       #:substitutable? #f)
-     #:tests? #f)
+       #:substitutable? #f))
     (inputs (list zlib glib tbb glibc `(,gcc "lib")))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
