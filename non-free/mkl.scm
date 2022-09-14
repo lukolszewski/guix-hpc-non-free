@@ -23,12 +23,31 @@
   #:use-module (gnu packages tbb)
   #:use-module (guix gexp)
   #:use-module (gnu packages gcc)
-  #:use-module (gnu packages libffi)
+;;  #:use-module (gnu packages libffi)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages maths)
+  #:use-module (guix inferior)
+  #:use-module (guix channels)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define channels
+  ;; This is the old revision from which we want to
+  ;; extract guile-json.
+  (list (channel
+         (name 'guix)
+         (url "https://git.savannah.gnu.org/git/guix.git")
+         (commit
+          "c81457a5883ea43950eb2ecdcbb58a5b144bcd11"))))
+
+(define inferior
+  ;; An inferior representing the above revision.
+  (inferior-for-channels channels))
+
+
+
 
 (define-public level-zero
   (package
@@ -253,7 +272,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list zlib glib tbb glibc `(,gcc "lib") elfutils level-zero libffi))
+    (inputs (list zlib glib tbb glibc `(,gcc "lib") elfutils level-zero (lookup-inferior-packages inferior "libffi")))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
