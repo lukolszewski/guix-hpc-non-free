@@ -234,7 +234,9 @@ reference a C interface.")
 				    (string-append #$tbb "/lib")
                                     (string-append #$zlib "/lib")
                                     (string-append #$level-zero "/lib")
-                                    (string-append #$gcc:lib "/lib"))
+				    (string-append #$elfutils "/lib")
+                                    (string-append #$libffi "/lib")
+                                    (string-append #$gcc "/lib"))
                               ":")))
                  (define (patch-elf file)
                    (format #t "Patching ~a ...~%" file)
@@ -250,7 +252,7 @@ reference a C interface.")
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
        #:substitutable? #f))
-    (inputs (list zlib glib tbb glibc `(,gcc "lib") level-zero))
+    (inputs (list zlib glib tbb glibc `(,gcc "lib") `(,elfutils "lib") level-zero libffi))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
     ;; 32-bit libraries are not installed.
