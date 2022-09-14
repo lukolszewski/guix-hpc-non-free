@@ -11,6 +11,7 @@
 (define-module (non-free mkl)
   #:use-module (guix)
   #:use-module (guix inferior)
+  #:use-module (guix memoization)
   #:use-module (guix channels)
   #:use-module (srfi srfi-1))
 
