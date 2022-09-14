@@ -248,7 +248,8 @@ reference a C interface.")
        ;; We don't need the tool chain, Coreutils, and all that.
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
-       #:substitutable? #f))
+       #:substitutable? #f)
+     #:tests? #f)
     (inputs (list zlib glib tbb glibc `(,gcc "lib")))
     (native-inputs (list patchelf tar bash gzip gawk coreutils p7zip))
 
