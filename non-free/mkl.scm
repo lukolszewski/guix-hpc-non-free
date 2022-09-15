@@ -44,7 +44,7 @@
               (sha256
                (base32
                 "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh"))
-              (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
+              (patches "libffi-3.2.1-complex-alpha.patch")))
     (build-system gnu-build-system)
     (arguments
      `(;; Prevent the build system from passing -march and -mtune to the
