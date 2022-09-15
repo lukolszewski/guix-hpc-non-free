@@ -330,7 +330,7 @@ include_dirs = ~:*~a/include~%" #$(this-package-input "mkl"))))))
                               ;; These tests may fail on 32-bit systems (see:
                               ;; https://github.com/numpy/numpy/issues/18387).
                               "not test_float_remainder_overflow "
-                              "and not test_pareto"
+                              "and not test_pareto "
 			      ;; This test fails if mkl is in inputs
 			      "and not test_overrides"
                               ;; These tests seem to fail on machines without
