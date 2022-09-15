@@ -316,7 +316,28 @@ include_dirs = ~:*~a/include~%" #$(this-package-input "mkl"))))))
               ;; Don't try to call '/bin/true' specifically.
               (substitute* "numpy/core/tests/test_cpu_features.py"
                 (("/bin/true") (search-input-file inputs "bin/true")))))
-;;          (delete 'check)
+	  ;;          (delete 'check)
+	  (replace 'check
+            (lambda* (#:key tests? outputs inputs #:allow-other-keys)
+              (when tests?
+                (invoke "./runtests.py" "-vv" "--no-build" "--mode=fast"
+                        "-j" (number->string (parallel-job-count))
+                        ;; Contrary to scipy, the runtests.py script of numpy
+                        ;; does *not* automatically provide -n when -j is used
+                        ;; (see: https://github.com/numpy/numpy/issues/21359).
+                        "--" "-n" (number->string (parallel-job-count))
+                        "-k" (string-append
+                              ;; These tests may fail on 32-bit systems (see:
+                              ;; https://github.com/numpy/numpy/issues/18387).
+                              "not test_float_remainder_overflow "
+                              "and not test_pareto"
+                              ;; These tests seem to fail on machines without
+                              ;; an FPU is still under investigation upstream.
+                              ;; https://github.com/numpy/numpy/issues/20635
+                              #$@(if (target-riscv64?)
+                                   `(" and not test_float"
+                                     " and not test_fpclass")
+                                   '()))))))
 	  )))
     (native-inputs
      (list python-cython
