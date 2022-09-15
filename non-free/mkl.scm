@@ -293,8 +293,8 @@ reference a C interface.")
                  (for-each (lambda (file)
                              (when (elf-file? file)
                                (patch-elf file)))
-                           (find-files #$output  ".*\\.so"))))))
-	 )
+                           (find-files #$output  ".*\\.so"))
+		 (patch-elf (string-append bindir "/" "mkl_link_tool")))))))
        ;; We don't need the tool chain, Coreutils, and all that.
        #:implicit-inputs? #f
        ;; Let's not publish or obtain substitutes for that.
