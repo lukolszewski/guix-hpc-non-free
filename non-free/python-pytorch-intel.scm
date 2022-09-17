@@ -94,7 +94,15 @@
                 "1fq9j85b9x6mi4bdwa6ilg5r51zyxrmjxc0h5jr793dwvla8x4x9"))))
     (build-system cmake-build-system)
     (arguments 
-     '(#:configure-flags (list "-DMAGMA_ENABLE_CUDA=ON"
+     '(#:phases (modify-phases %standard-phases
+		  (add-before 'configure 'set-environment-vars
+		    (lambda* (#:key inputs #:allow-other-keys)
+		      (let ((mkl (assoc-ref inputs "mkl"))
+			    (cuda (assoc-ref inputs "cuda-11.6")))
+			(setenv "MKLROOT" mkl)
+			(setenv "CUDADIR" cuda)
+			#t))))
+       #:configure-flags (list "-DMAGMA_ENABLE_CUDA=ON"
                                "-DBLA_VENDOR=Intel10_64lp"
 			       "-DMAGMA_WITH_MKL=ON"
 			       "-DBUILD_SHARED_LIBS=ON")
