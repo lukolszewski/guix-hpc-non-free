@@ -98,7 +98,7 @@
 			       "-DMAGMA_WITH_MKL"
 			       "-DBUILD_SHARED_LIBS=on")
        #:tests? #f))
-    (inputs (list bash cuda mkl))
+    (inputs (list bash cuda@11.6 mkl))
     (native-inputs (list bash))
     (synopsis "Magma CUDA library")
     (description "Magma CUDA library provides LAPACK like functionality")
