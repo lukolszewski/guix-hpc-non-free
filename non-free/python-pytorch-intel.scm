@@ -84,14 +84,11 @@
     (name "magma-cuda")
     (version "2.6.2")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://bitbucket.org/icl/magma.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "http://icl.utk.edu/projectsfiles/magma/downloads/magma-" version ".tar.gz"))
               (sha256
                (base32
-                "1fq9j85b9x6mi4bdwa6ilg5r51zyxrmjxc0h5jr793dwvla8x4x9"))))
+                "0w8av977wv08b8ml7bpkcay8ry77a0z92b4p1g8y40q9n3d59dbm"))))
     (build-system cmake-build-system)
     (arguments 
      '(#:phases (modify-phases %standard-phases
