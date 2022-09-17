@@ -99,7 +99,7 @@
 			       "-DBUILD_SHARED_LIBS=ON")
        #:tests? #f))
     (inputs (list bash cuda-11.6 mkl))
-    (native-inputs (list bash))
+    (native-inputs (list bash gfortran-toolchain))
     (synopsis "Magma CUDA library")
     (description "Magma CUDA library provides LAPACK like functionality")
     (home-page "https://bitbucket.org/icl/magma.githttps://bitbucket.org/icl/magma.git")
