@@ -72,6 +72,7 @@
   #:use-module (gnu packages machine-learning)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages commencement)
   #:use-module (non-free python-numpy-intel)
   #:use-module (non-free mkl)
   #:use-module (non-free cuda)
