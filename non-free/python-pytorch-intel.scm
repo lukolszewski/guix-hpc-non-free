@@ -70,7 +70,10 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages machine-learning)
-  #:use-module (non-gnu python-numpy-intel)
+  #:use-module (non-free python-numpy-intel)
+  #:use-module (non-free mkl)
+  #:use-module (non-free cuda)
+  #:use-module (non-free cudnn)
   #:use-module (ice-9 match))
 
 (define-public magma-cuda
