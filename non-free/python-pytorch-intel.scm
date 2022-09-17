@@ -95,8 +95,8 @@
     (arguments 
      '(#:configure-flags (list "-DMAGMA_ENABLE_CUDA=ON"
                                "-DBLA_VENDOR=Intel10_64lp"
-			       "-DMAGMA_WITH_MKL"
-			       "-DBUILD_SHARED_LIBS=on")
+			       "-DMAGMA_WITH_MKL=ON"
+			       "-DBUILD_SHARED_LIBS=ON")
        #:tests? #f))
     (inputs (list bash cuda-11.6 mkl))
     (native-inputs (list bash))
