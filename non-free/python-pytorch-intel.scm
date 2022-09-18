@@ -113,9 +113,9 @@
     (license expat)))
 
 
-(define-public python-pytorch
+(define-public python-pytorch-cuda
   (package
-    (name "python-pytorch")
+    (name "python-pytorch-cuda")
     (version "1.12.0")
     (source (origin
               (method git-fetch)
