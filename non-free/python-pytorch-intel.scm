@@ -153,7 +153,7 @@
 		  (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
 		      (let (
-			    (cudnn (assoc-ref inputs "cudnn-8.4.1")))
+			    (cudnn (assoc-ref inputs "cudnn")))
 			(display cudnn)
 			(setenv "USE_CUDNN" "1")
 			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
@@ -220,7 +220,7 @@
        ;; We're also missing some Python modules, such as expecttest.
        #:tests? #f))
     (native-inputs
-     (list cmake ninja cudnn-8.4.1))
+     (list cmake ninja))
     (inputs
      (list eigen
            ;; ("fmt" ,fmt)
@@ -231,9 +231,7 @@
            gloo
            nnpack
 	   cuda-11.6
-	   cudnn-8.4.1
-	   ;;           openblas
-	   ;;           openmpi
+	   cudnn
 	   mkl
 	   magma-cuda
            pthreadpool
