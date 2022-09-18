@@ -156,8 +156,8 @@
 			    (cudnn (assoc-ref inputs "cudnn-8.4.1")))
 			(display cudnn)
 			(setenv "USE_CUDNN" "1")
-			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
-			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
+			;;(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
+			;;(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
 			#t)))
                   (add-before 'build 'use-system-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
