@@ -222,7 +222,7 @@
            gloo
            nnpack
 	   cuda-11.6
-	   cudnn
+	   cudnn-8.4.1
 	   ;;           openblas
 	   ;;           openmpi
 	   mkl
