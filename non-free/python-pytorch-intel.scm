@@ -150,7 +150,7 @@
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-		  (add-before 'configure 'set-environment-vars
+		  (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
 		      (let ((mkl (assoc-ref inputs "mkl"))
 			    (cudnn (assoc-ref inputs "cudnn-8.4.1")))
