@@ -102,6 +102,7 @@
        #:configure-flags (list "-DMAGMA_ENABLE_CUDA=ON"
                                "-DBLA_VENDOR=Intel10_64lp"
 			       "-DMAGMA_WITH_MKL=ON"
+			       "-DGPU_TARGET='Turing Ampere'"
 			       "-DBUILD_SHARED_LIBS=ON")
        #:tests? #f))
     (inputs (list bash cuda-11.6 mkl))
