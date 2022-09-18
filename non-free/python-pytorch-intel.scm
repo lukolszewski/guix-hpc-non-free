@@ -219,7 +219,7 @@
        ;; We're also missing some Python modules, such as expecttest.
        #:tests? #f))
     (native-inputs
-     (list cmake ninja cudnn-8.4.1XS))
+     (list cmake ninja cudnn-8.4.1))
     (inputs
      (list eigen
            ;; ("fmt" ,fmt)
