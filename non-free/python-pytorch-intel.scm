@@ -221,10 +221,12 @@
            googlebenchmark
            gloo
            nnpack
-	   cuda
+	   cuda-11.6
 	   cudnn
-;;           openblas
-;;           openmpi
+	   ;;           openblas
+	   ;;           openmpi
+	   mkl
+	   magma-cuda
            pthreadpool
            protobuf
            pybind11
