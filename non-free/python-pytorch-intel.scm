@@ -150,20 +150,14 @@
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-		  (add-before 'check 'set-environment-variables
-		    (lambda* (#:key inputs #:allow-other-keys)
-		      (let ((mkl (assoc-ref inputs "mkl")))
-			(display mkl)
-			(setenv "SOMEMKLVAR" (string-append mkl "/share/terminfo"))
-			#t)))
 		  (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
 		      (let (
-			    (mkl (assoc-ref inputs "mkl")))
-			(display mkl)
+			    (cudnn (assoc-ref inputs "cudnn-8.4.1")))
+			(display cudnn)
 			(setenv "USE_CUDNN" "1")
-			;;(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
-			;;(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
+			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
+			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
 			#t)))
                   (add-before 'build 'use-system-libraries
                     (lambda* (#:key outputs #:allow-other-keys)

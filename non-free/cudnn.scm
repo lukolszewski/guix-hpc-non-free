@@ -132,7 +132,7 @@ neural networks for NVIDIA GPUs, which is proprietary.")
                "https://developer.download.nvidia.com/compute/redist/cudnn/v8.0.5/cudnn-11.1-linux-x64-v8.0.5.39.tgz"
                "1khcn3wldm6dpq7rxjm05r23ji3m31wm1cbcdz6ap79rg7x6n10x")))
 
-(define-public cudnn cudnn-8.0.5)
+;;(define-public cudnn cudnn-8.0.5)
 
 (define-public cudnn-8.4.1
   (make-cudnn "8.4.1.50"
