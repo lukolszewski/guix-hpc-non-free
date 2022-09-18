@@ -150,6 +150,14 @@
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
+		  (add-before 'configure 'set-environment-vars
+		    (lambda* (#:key inputs #:allow-other-keys)
+		      (let ((mkl (assoc-ref inputs "mkl"))
+			    (cudnn (assoc-ref inputs "cudnn-8.4.1")))
+			(setenv "USE_CUDNN" "1")
+			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
+			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
+			#t)))
                   (add-before 'build 'use-system-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Tell 'setup.py' to let 'CMakeLists.txt' know that we
