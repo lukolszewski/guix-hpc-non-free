@@ -152,7 +152,7 @@
      '(#:phases (modify-phases %standard-phases
 		  (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
-		      (let ((mkl (assoc-ref inputs "mkl"))
+		      (let (
 			    (cudnn (assoc-ref inputs "cudnn-8.4.1")))
 			(setenv "USE_CUDNN" "1")
 			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
@@ -219,7 +219,7 @@
        ;; We're also missing some Python modules, such as expecttest.
        #:tests? #f))
     (native-inputs
-     (list cmake ninja))
+     (list cmake ninja cudnn-8.4.1XS))
     (inputs
      (list eigen
            ;; ("fmt" ,fmt)
