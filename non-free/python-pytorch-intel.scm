@@ -220,7 +220,7 @@
        ;; We're also missing some Python modules, such as expecttest.
        #:tests? #f))
     (native-inputs
-     (list cmake ninja))
+     (list bash cmake ninja))
     (inputs
      (list eigen
            ;; ("fmt" ,fmt)
