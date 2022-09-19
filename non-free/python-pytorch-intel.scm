@@ -154,7 +154,7 @@
 		    (lambda* (#:key inputs #:allow-other-keys)
 		      (let (
 			    (cudnn (assoc-ref inputs "cudnn")))
-			(display cudnn)
+			(setenv "USE_DISTRIBUTED" "OFF")
 			(setenv "USE_CUDNN" "1")
 			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
 			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
@@ -228,7 +228,7 @@
            gemmlowp
            googletest
            googlebenchmark
-           gloo
+           ;;gloo
            nnpack
 	   cuda-11.6
 	   cudnn
