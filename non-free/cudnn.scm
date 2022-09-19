@@ -103,7 +103,9 @@
                         (for-each (lambda (lib)
                                     (install-file lib libdir))
                                   (remove (cut string-suffix? <> ".a") (find-files "lib64")))
-
+			(for-each (lambda (lib)
+                                    (install-file lib libdir))
+                                  (remove (cut string-suffix? <> ".a") (find-files "lib")))
                         ;; install include files
                         (copy-recursively (string-append "." "/include")
                                           includedir)))))))
