@@ -155,6 +155,7 @@
 		      (let (
 			    (cudnn (assoc-ref inputs "cudnn")))
 			(setenv "USE_DISTRIBUTED" "OFF")
+			(setenv "USE_NCCL" "OFF")
 			(setenv "USE_CUDNN" "1")
 			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
 			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
