@@ -128,6 +128,7 @@
                (base32
                 "0pdqi91qzgyx947zv4pw2fdj9vpqvdhfzw1ydjd4mpqm8g5njgnz"))
               (patches (search-patches "python-pytorch-system-libraries.patch"
+				       "python-pytorch-cuda-test.patch"
                                        "python-pytorch-runpath.patch"))
               (modules '((guix build utils)))
               (snippet
