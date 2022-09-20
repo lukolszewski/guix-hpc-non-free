@@ -112,6 +112,52 @@
     (home-page "https://bitbucket.org/icl/magma.githttps://bitbucket.org/icl/magma.git")
     (license expat)))
 
+(define-public gloo-cuda
+  (let ((version "0.0.0") ; no proper version tag
+        (commit "950c0e2")
+        (revision "1"))
+    (package
+      (name "gloo-cuda")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/facebookincubator/gloo")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "033p8ja70qi7p79f00c43galm60wr7kq9s7v4lrdbwaji2h2rkvf"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       (list googletest))
+      (inputs
+       (list openssl cuda-11.6))
+      (arguments
+       `(#:configure-flags '("-DUSE_CUDA=ON"
+			     "-DBUILD_TEST=1")
+         #:phases
+         (modify-phases %standard-phases
+	   (add-before 'configure 'set-environment-vars
+		    (lambda* (#:key inputs #:allow-other-keys)
+		      (let (  ;;(mkl (assoc-ref inputs "mkl"))
+			    (cuda (assoc-ref inputs "cuda-11.6")))
+			;;(setenv "MKLROOT" mkl)
+			(setenv "CUDADIR" cuda)
+			#t)))
+           (replace 'check
+             (lambda* (#:key tests? #:allow-other-keys)
+               (when tests?
+                 (invoke "make" "gloo_test")
+		 (invoke "make" "gloo_test_cuda" )))))))
+      (synopsis "Collective communications library")
+      (description
+       "Gloo is a collective communications library.  It comes with a
+number of collective algorithms useful for machine learning applications.
+These include a barrier, broadcast, and allreduce.")
+      (home-page "https://github.com/facebookincubator/gloo")
+      (license license:bsd-3))))
 
 (define-public python-pytorch-cuda
   (package
