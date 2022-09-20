@@ -138,11 +138,9 @@
                               (delete-file-recursively
                                (string-append "third_party/" directory)))
                             '("benchmark" "cpuinfo" "eigen"
-
                               ;; FIXME: QNNPACK (of which XNNPACK is a fork)
                               ;; needs these.
                               ;; "FP16" "FXdiv" "gemmlowp" "psimd"
-
                               "gloo" "googletest" "ios-cmake" "NNPACK"
                               "onnx" "protobuf" "pthreadpool"
                               "pybind11" "python-enum" "python-peachpy"
