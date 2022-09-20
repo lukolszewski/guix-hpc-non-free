@@ -228,7 +228,7 @@
            gemmlowp
            googletest
            googlebenchmark
-           ;;gloo
+           gloo
            nnpack
 	   cuda-11.6
 	   cudnn
