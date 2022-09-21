@@ -195,7 +195,8 @@ These include a barrier, broadcast, and allreduce.")
                               "python-six" "tbb" "XNNPACK" "zstd"))))))
     (build-system python-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(#:configure-flags (list "-DGPU_TARGET='Turing Ampere'")
+       #:phases (modify-phases %standard-phases
 		  (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
 		      (let (
@@ -276,6 +277,7 @@ These include a barrier, broadcast, and allreduce.")
            googletest
            googlebenchmark
            gloo-cuda
+	   glog
            nnpack
 	   cuda-11.6
 	   cudnn
