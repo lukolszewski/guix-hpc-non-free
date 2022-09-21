@@ -128,7 +128,8 @@
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "033p8ja70qi7p79f00c43galm60wr7kq9s7v4lrdbwaji2h2rkvf"))))
+           "033p8ja70qi7p79f00c43galm60wr7kq9s7v4lrdbwaji2h2rkvf")))
+       (patches (search-patches "gloo-cuda11-6-arch.patch")))
       (build-system cmake-build-system)
       (native-inputs
        (list googletest))

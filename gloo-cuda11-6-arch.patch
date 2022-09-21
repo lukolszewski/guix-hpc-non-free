@@ -1,0 +1,25 @@
+diff --git a/cmake/Cuda.cmake b/cmake/Cuda.cmake
+index e11f8d4..2424e5c 100644
+--- a/cmake/Cuda.cmake
++++ b/cmake/Cuda.cmake
+@@ -3,6 +3,7 @@
+ set(gloo_known_gpu_archs "30 35 50 52 60 61 70")
+ set(gloo_known_gpu_archs7 "30 35 50 52")
+ set(gloo_known_gpu_archs8 "30 35 50 52 60 61")
++set(gloo_known_gpu_archs8 "60 61 70 75 80 86")
+ 
+ ################################################################################
+ # Function for selecting GPU arch flags for nvcc based on CUDA_ARCH_NAME
+@@ -145,9 +146,11 @@ elseif (${CUDA_VERSION} LESS 9.0)
+   set(gloo_known_gpu_archs ${gloo_known_gpu_archs8})
+   list(APPEND CUDA_NVCC_FLAGS "-D_MWAITXINTRIN_H_INCLUDED")
+   list(APPEND CUDA_NVCC_FLAGS "-D__STRICT_ANSI__")
+-else()
++elseif (${CUDA_VERSION} LESS 11.0)
+   # CUDA 8 may complain that sm_20 is no longer supported. Suppress the warning for now.
+   list(APPEND CUDA_NVCC_FLAGS "-Wno-deprecated-gpu-targets")
++else()
++  set(gloo_known_gpu_archs ${gloo_known_gpu_archs11})
+ endif()
+ 
+ include_directories(SYSTEM ${CUDA_INCLUDE_DIRS})
