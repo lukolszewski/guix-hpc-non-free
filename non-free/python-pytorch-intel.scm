@@ -137,8 +137,7 @@
       (inputs
        (list openssl cuda-11.6))
       (arguments
-       `(#:configure-flags '("-DUSE_SYSTEM_NCCL=ON"
-			     "-DUSE_CUDA=ON"
+       `(#:configure-flags '("-DUSE_CUDA=ON"
 			     "-DBUILD_TEST=1")
          #:phases
          (modify-phases %standard-phases
@@ -197,7 +196,9 @@ These include a barrier, broadcast, and allreduce.")
                               "python-six" "tbb" "XNNPACK" "zstd"))))))
     (build-system python-build-system)
     (arguments
-     '(#:configure-flags (list "-DGPU_TARGET='Turing Ampere'")
+     '(#:configure-flags (list
+			  "-DUSE_SYSTEM_NCCL=ON"
+			  "-DGPU_TARGET='Turing Ampere'")
        #:phases (modify-phases %standard-phases
 		  (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
