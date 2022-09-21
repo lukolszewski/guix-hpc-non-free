@@ -176,6 +176,7 @@ These include a barrier, broadcast, and allreduce.")
                (base32
                 "0pdqi91qzgyx947zv4pw2fdj9vpqvdhfzw1ydjd4mpqm8g5njgnz"))
               (patches (search-patches "python-pytorch-system-libraries.patch"
+				       "python-pytorch-dependency.patch"
 				       "python-pytorch-cuda-test.patch"
                                        "python-pytorch-runpath.patch"))
               (modules '((guix build utils)))
@@ -205,7 +206,7 @@ These include a barrier, broadcast, and allreduce.")
 			    (cudnn (assoc-ref inputs "cudnn")))
 			;;(setenv "USE_DISTRIBUTED" "OFF")
 			;;(setenv "USE_NCCL" "OFF")
-			(setenv "USE_SYSTEM_NCCL" "ON")
+			;;(setenv "USE_SYSTEM_NCCL" "ON")
 			(setenv "USE_CUDNN" "1")
 			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
 			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
