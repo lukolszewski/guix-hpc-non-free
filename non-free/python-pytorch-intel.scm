@@ -137,7 +137,8 @@
       (inputs
        (list openssl cuda-11.6))
       (arguments
-       `(#:configure-flags '("-DUSE_CUDA=ON"
+       `(#:configure-flags '("-DUSE_SYSTEM_NCCL=ON"
+			     "-DUSE_CUDA=ON"
 			     "-DBUILD_TEST=1")
          #:phases
          (modify-phases %standard-phases
