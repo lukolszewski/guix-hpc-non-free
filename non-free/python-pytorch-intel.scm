@@ -275,7 +275,7 @@ These include a barrier, broadcast, and allreduce.")
            gemmlowp
            googletest
            googlebenchmark
-           gloo
+           gloo-cuda
            nnpack
 	   cuda-11.6
 	   cudnn
