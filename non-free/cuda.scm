@@ -214,6 +214,7 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
 (define-public cuda-11.7
   (package
     (inherit cuda-11.0)
+    (name "cuda-11.7")
     (version "11.7.0")
     (source
      (cuda-source

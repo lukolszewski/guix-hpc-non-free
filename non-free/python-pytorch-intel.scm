@@ -152,7 +152,7 @@
              (lambda* (#:key tests? #:allow-other-keys)
                (when tests?
                  (invoke "make" "gloo_test")
-		 (invoke "make" "gloo_test_cuda" )))))))
+		 (invoke "make" "gloo_cuda" )))))))
       (synopsis "Collective communications library")
       (description
        "Gloo is a collective communications library.  It comes with a
