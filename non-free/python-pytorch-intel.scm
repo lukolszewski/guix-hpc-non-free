@@ -269,16 +269,16 @@ These include a barrier, broadcast, and allreduce.")
        ;; We're also missing some Python modules, such as expecttest.
        #:tests? #f))
     (native-inputs
-     (list bash cmake ninja))
+     (list bash cmake ninja glog))
     (inputs
      (list eigen
            ;; ("fmt" ,fmt)
            fp16
            gemmlowp
+	   glog
            googletest
            googlebenchmark
            gloo-cuda
-	   glog
            nnpack
 	   cuda-11.6
 	   cudnn
