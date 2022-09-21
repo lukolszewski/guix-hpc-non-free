@@ -177,7 +177,8 @@ These include a barrier, broadcast, and allreduce.")
     (build-system gnu-build-system)
     (arguments '(#:phases
 		 (modify-phases %standard-phases
-		   (add-before 'configure 'set-environment-vars
+		   (delete 'configure)
+		   (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
 		      (let ((cuda (assoc-ref inputs "cuda-11.6")))
 			(setenv "CUDA_HOME" cuda)
