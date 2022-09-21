@@ -161,6 +161,35 @@ These include a barrier, broadcast, and allreduce.")
       (home-page "https://github.com/facebookincubator/gloo")
       (license license:bsd-3))))
 
+(define-public nccl
+  (package
+    (name "nccl")
+    (version "2.14.3-1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/NVIDIA/nccl.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05hnnb7ar9qaj22660j8s00ark4v1p697z199dkw6gp7mwwi7hs8"))))
+    (build-system gnu-build-system)
+    (arguments '(#:phases
+		 (modify-phases %standard-phases
+		   (add-before 'configure 'set-environment-vars
+		    (lambda* (#:key inputs #:allow-other-keys)
+		      (let ((cuda (assoc-ref inputs "cuda-11.6")))
+			(setenv "CUDA_HOME" cuda)
+			#t))))
+		 #:make-flags '("NVCC_GENCODE='-gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_80,code=sm_80'")
+		 #:tests? #f))
+    (inputs (list gawk cuda-11.6))
+    (synopsis "NVidia nccl library")
+    (description "NVIDIA's nccl")
+    (home-page "https://developer.nvidia.com/nccl")
+    (license expat)))
+
 (define-public python-pytorch-cuda
   (package
     (name "python-pytorch-cuda")
