@@ -197,7 +197,6 @@ These include a barrier, broadcast, and allreduce.")
     (build-system python-build-system)
     (arguments
      '(#:configure-flags (list
-			  "-DUSE_SYSTEM_NCCL=ON"
 			  "-DGPU_TARGET='Turing Ampere'")
        #:phases (modify-phases %standard-phases
 		  (add-before 'build 'set-environment-vars
@@ -206,6 +205,7 @@ These include a barrier, broadcast, and allreduce.")
 			    (cudnn (assoc-ref inputs "cudnn")))
 			;;(setenv "USE_DISTRIBUTED" "OFF")
 			;;(setenv "USE_NCCL" "OFF")
+			(setenv "USE_SYSTEM_NCCL" "ON")
 			(setenv "USE_CUDNN" "1")
 			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
 			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
