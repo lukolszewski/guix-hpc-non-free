@@ -40,6 +40,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages jupyter)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
