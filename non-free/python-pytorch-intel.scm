@@ -175,7 +175,7 @@ These include a barrier, broadcast, and allreduce.")
                (base32
                 "00g77idm26wa12qqrrabrikahza23ggj2azzz03f83r0dp7938s2"))))
     (build-system gnu-build-system)
-    (arguments '(#:phases
+    (arguments `(#:phases
 		 (modify-phases %standard-phases
 		   (delete 'configure)
 		   (add-before 'build 'set-environment-vars
@@ -183,7 +183,7 @@ These include a barrier, broadcast, and allreduce.")
 		      (let ((cuda (assoc-ref inputs "cuda-11.6")))
 			(setenv "CUDA_HOME" cuda)
 			#t))))
-		 #:make-flags '((string-append "PREFIX=" (assoc-ref %outputs "out")))
+		 #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
 		 #:tests? #f))
     (inputs (list bash which openssl cuda-11.6))
     (synopsis "NVidia nccl library")
