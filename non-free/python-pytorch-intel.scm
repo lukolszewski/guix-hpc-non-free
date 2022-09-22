@@ -164,7 +164,7 @@ These include a barrier, broadcast, and allreduce.")
 (define-public nccl
   (package
     (name "nccl")
-    (version "2.14.3-1")
+    (version "2.12.10-1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -173,7 +173,7 @@ These include a barrier, broadcast, and allreduce.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05hnnb7ar9qaj22660j8s00ark4v1p697z199dkw6gp7mwwi7hs8"))))
+                "00g77idm26wa12qqrrabrikahza23ggj2azzz03f83r0dp7938s2"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
 		 (modify-phases %standard-phases
@@ -183,9 +183,9 @@ These include a barrier, broadcast, and allreduce.")
 		      (let ((cuda (assoc-ref inputs "cuda-11.6")))
 			(setenv "CUDA_HOME" cuda)
 			#t))))
-		 #:make-flags '("NVCC_GENCODE='-gencode=arch=compute_80,code=sm_80'")
+;;		 #:make-flags '("NVCC_GENCODE='-gencode=arch=compute_80,code=sm_80'")
 		 #:tests? #f))
-    (inputs (list bash cuda-11.6))
+    (inputs (list bash which openssl cuda-11.6))
     (synopsis "NVidia nccl library")
     (description "NVIDIA's nccl")
     (home-page "https://developer.nvidia.com/nccl")
