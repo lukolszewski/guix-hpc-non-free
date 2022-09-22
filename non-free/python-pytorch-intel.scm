@@ -209,6 +209,7 @@ These include a barrier, broadcast, and allreduce.")
 			"python-pytorch-system-libraries.patch"
 			"python-pytorch-dependency.patch"
 			"python-pytorch-cuda-test.patch"
+			"python-pytorch-gtest.patch"
                         "python-pytorch-runpath.patch"))
               (modules '((guix build utils)))
               (snippet
