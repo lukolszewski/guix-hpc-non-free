@@ -228,15 +228,14 @@ These include a barrier, broadcast, and allreduce.")
                               "python-six" "tbb" "XNNPACK" "zstd"))))))
     (build-system python-build-system)
     (arguments
-     '(#:configure-flags (list
-			  "-DGPU_TARGET='Turing Ampere'")
-       #:phases (modify-phases %standard-phases
+     '(#:phases (modify-phases %standard-phases
 		  (add-before 'build 'set-environment-vars
 		    (lambda* (#:key inputs #:allow-other-keys)
 		      (let (
 			    (cudnn (assoc-ref inputs "cudnn")))
 			;;(setenv "USE_DISTRIBUTED" "OFF")
 			;;(setenv "USE_NCCL" "OFF")
+			(setenv "GPU_TARGET" "Turing Ampere")
 			(setenv "USE_SYSTEM_NCCL" "ON")
 			(setenv "USE_CUDNN" "1")
 			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
