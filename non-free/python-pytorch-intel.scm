@@ -273,31 +273,7 @@ These include a barrier, broadcast, and allreduce.")
 			    (when tests?
                               (add-installed-pythonpath inputs outputs)
                               (invoke "python" "test/run_test.py"))))
-			(add-after 'install 'fix-issue-with-libcuda.so.1
-			  (lambda* (#:key inputs outputs #:allow-other-keys)
-			    (chdir "..")
-			    (use-modules (ice-9 ftw)
-					 (ice-9 regex)
-					 (ice-9 rdelim)
-					 (ice-9 popen)
-					 (ice-9 textual-ports))
-			    (let* ((libdir (string-append #$output "/lib")))
-			      ;; ------------------------------
-			      ;; patchelf
-			      (define (get-rpaths file)
-				(format #t "Getting rpaths from ~a ...~%" file)
-				(let* ((port (open-input-pipe (string-append "patchelf --print-rpath " file)))
-				       (str  (read-line port))) ; from (ice-9 rdelim)
-				  (close-pipe port)
-				  str))
-	
-			      (define (patch-elf file)
-	      			(format #t "Patching ~a ...~%" file)
-				(invoke "patchelf" "--set-rpath" (string-append (get-rpaths file) ":" #$nvidia-libs "/lib") file))
-			      (for-each (lambda (file)
-					  (when (elf-file? file)
-					    (patch-elf file)))
-					(find-files #$output  ".*"))))))
+			
 			(add-after 'install 'remove-test-executables
 			  (lambda* (#:key inputs outputs #:allow-other-keys)
 			    ;; Remove test executables, but keep other executables
