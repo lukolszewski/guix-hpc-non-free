@@ -12,6 +12,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix git-download)
   #:use-module (gnu packages)
+  #:use-module (nongnu packages nvidia)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
