@@ -78,7 +78,7 @@
   #:use-module (non-free mkl)
   #:use-module (non-free cuda)
   #:use-module (non-free cudnn)
-  #:use-module (nongnu packages nvidia)
+ ;; #:use-module (nongnu packages nvidia)
   #:use-module (ice-9 match))
 
 (define-public magma-cuda
@@ -317,7 +317,7 @@ These include a barrier, broadcast, and allreduce.")
 	   cuda-11.6
 	   cudnn
 	   mkl
-	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
+	  ;; nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
 	   magma-cuda
 	   nccl
            pthreadpool
