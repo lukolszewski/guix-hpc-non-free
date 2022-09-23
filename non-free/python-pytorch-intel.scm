@@ -230,79 +230,104 @@ These include a barrier, broadcast, and allreduce.")
                               "python-six" "tbb" "XNNPACK" "zstd"))))))
     (build-system python-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-		  (add-before 'build 'set-environment-vars
-		    (lambda* (#:key inputs #:allow-other-keys)
-		      (let (
-			    (cudnn (assoc-ref inputs "cudnn")))
-			;;(setenv "USE_DISTRIBUTED" "OFF")
-			;;(setenv "USE_NCCL" "OFF")
-			(setenv "GPU_TARGET" "Turing Ampere")
-			(setenv "USE_SYSTEM_NCCL" "ON")
-			(setenv "USE_CUDNN" "1")
-			(setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
-			(setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
-			#t)))
-                  (add-before 'build 'use-system-libraries
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Tell 'setup.py' to let 'CMakeLists.txt' know that we
-                      ;; want to use "system libraries" instead of the bundled
-                      ;; ones.
-                      (setenv "USE_SYSTEM_LIBS" "1")
-
-                      (substitute* "cmake/Dependencies.cmake"
-                        (("if\\(USE_SYSTEM_BIND11\\)")
-                         "if(TRUE)"))
-
-                      ;; XXX: Disable that for simplicity for now.
-                      (setenv "USE_FBGEMM" "0")))
-                  (add-before 'build 'make-things-writable
-                    (lambda _
-                      ;; The 'build_caffe2' function in
-                      ;; 'tools/build_pytorch_libs.py', called from the
-                      ;; top-level 'setup.py', needs write access to this
-                      ;; directory.
-                      (for-each make-file-writable
-                                (find-files "caffe2/proto" "."
-                                            #:directories? #t))))
-                  (replace 'check
-                    (lambda* (#:key inputs outputs tests? #:allow-other-keys)
-                      ;; Run the test suite following the instructions in
-                      ;; 'CONTRIBUTING.md'.  XXX: Unfortunately this doesn't
-                      ;; work, unless you set GUIX_PYTHONPATH presumably.
-                      (when tests?
-                        (add-installed-pythonpath inputs outputs)
-                        (invoke "python" "test/run_test.py"))))
-                  (add-after 'install 'remove-test-executables
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      ;; Remove test executables, but keep other executables
-                      ;; such as 'torch_shm_manager' and and .so files such as
-                      ;; 'libtorch_global_deps.so'.
-                      (let ((python-site (site-packages inputs outputs)))
-                        (for-each delete-file
-                                  (find-files python-site
-                                              "(^test_cpp_rpc|_test)$")))))
-                  (add-after 'install 'remove-caffe2-onnx-scripts
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin")))
-                        ;; Remove 'convert-caffe2-to-onnx' and
-                        ;; 'convert-onnx-to-caffe2': they seem to be
-                        ;; deprecated and they cause a failure of the
-                        ;; 'sanity-check' phase:
-                        ;;
-                        ;; ImportError: cannot import name 'metanet_pb2' from partially initialized module 'caffe2.proto' (most likely due to a circular import)
-                        (for-each delete-file
-                                  (find-files bin "^convert-.*caffe2"))
-
-                        (substitute* (find-files out "^entry_points\\.txt$")
-                          (("^convert-.*" all)
-                           (string-append "# " all "\n")))))))
-
-       ;; XXX: Tests attempt to download data such as
-       ;; <https://raw.githubusercontent.com/pytorch/test-infra/master/stats/slow-tests.json>.
-       ;; We're also missing some Python modules, such as expecttest.
-       #:tests? #f))
+     (list #:phases #~(modify-phases %standard-phases
+			(add-before 'build 'set-environment-vars
+			  (lambda* (#:key inputs #:allow-other-keys)
+			    (let (
+				  (cudnn (assoc-ref inputs "cudnn")))
+			      ;;(setenv "USE_DISTRIBUTED" "OFF")
+			      ;;(setenv "USE_NCCL" "OFF")
+			      (setenv "GPU_TARGET" "Turing Ampere")
+			      (setenv "USE_SYSTEM_NCCL" "ON")
+			      (setenv "USE_CUDNN" "1")
+			      (setenv "CUDNN_INCLUDE_PATH" (string-append cudnn "/include"))
+			      (setenv "CUDNN_LIBRARY_PATH" (string-append cudnn "/lib"))
+			      #t)))
+			(add-before 'build 'use-system-libraries
+			  (lambda* (#:key outputs #:allow-other-keys)
+			    ;; Tell 'setup.py' to let 'CMakeLists.txt' know that we
+			    ;; want to use "system libraries" instead of the bundled
+			    ;; ones.
+			    (setenv "USE_SYSTEM_LIBS" "1")
+			    
+			    (substitute* "cmake/Dependencies.cmake"
+                              (("if\\(USE_SYSTEM_BIND11\\)")
+                               "if(TRUE)"))
+			    
+			    ;; XXX: Disable that for simplicity for now.
+			    (setenv "USE_FBGEMM" "0")))
+			(add-before 'build 'make-things-writable
+			  (lambda _
+			    ;; The 'build_caffe2' function in
+			    ;; 'tools/build_pytorch_libs.py', called from the
+			    ;; top-level 'setup.py', needs write access to this
+			    ;; directory.
+			    (for-each make-file-writable
+                                      (find-files "caffe2/proto" "."
+						  #:directories? #t))))
+			(replace 'check
+			  (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+			    ;; Run the test suite following the instructions in
+			    ;; 'CONTRIBUTING.md'.  XXX: Unfortunately this doesn't
+			    ;; work, unless you set GUIX_PYTHONPATH presumably.
+			    (when tests?
+                              (add-installed-pythonpath inputs outputs)
+                              (invoke "python" "test/run_test.py"))))
+			(add-after 'install 'fix-issue-with-libcuda.so.1
+			  (lambda* (#:key inputs outputs #:allow-other-keys)
+			    (chdir "..")
+			    (use-modules (ice-9 ftw)
+					 (ice-9 regex)
+					 (ice-9 rdelim)
+					 (ice-9 popen)
+					 (ice-9 textual-ports))
+			    (let* ((libdir (string-append #$output "/lib")))
+			      ;; ------------------------------
+			      ;; patchelf
+			      (define (get-rpaths file)
+				(format #t "Getting rpaths from ~a ...~%" file)
+				(let* ((port (open-input-pipe (string-append "patchelf --print-rpath " file)))
+				       (str  (read-line port))) ; from (ice-9 rdelim)
+				  (close-pipe port)
+				  str))
+	
+			      (define (patch-elf file)
+	      			(format #t "Patching ~a ...~%" file)
+				(invoke "patchelf" "--set-rpath" (string-append (get-rpaths file) ":" #$nvidia-libs "/lib") file))
+			      (for-each (lambda (file)
+					  (when (elf-file? file)
+					    (patch-elf file)))
+					(find-files #$output  ".*"))))))
+			(add-after 'install 'remove-test-executables
+			  (lambda* (#:key inputs outputs #:allow-other-keys)
+			    ;; Remove test executables, but keep other executables
+			    ;; such as 'torch_shm_manager' and and .so files such as
+			    ;; 'libtorch_global_deps.so'.
+			    (let ((python-site (site-packages inputs outputs)))
+                              (for-each delete-file
+					(find-files python-site
+						    "(^test_cpp_rpc|_test)$")))))
+			(add-after 'install 'remove-caffe2-onnx-scripts
+			  (lambda* (#:key outputs #:allow-other-keys)
+			    (let* ((out (assoc-ref outputs "out"))
+				   (bin (string-append out "/bin")))
+                              ;; Remove 'convert-caffe2-to-onnx' and
+                              ;; 'convert-onnx-to-caffe2': they seem to be
+                              ;; deprecated and they cause a failure of the
+                              ;; 'sanity-check' phase:
+                              ;;
+                              ;; ImportError: cannot import name 'metanet_pb2' from partially initialized module 'caffe2.proto' (most likely due to a circular import)
+                              (for-each delete-file
+					(find-files bin "^convert-.*caffe2"))
+			      
+                              (substitute* (find-files out "^entry_points\\.txt$")
+				(("^convert-.*" all)
+				 (string-append "# " all "\n")))))))
+	   
+	   ;; XXX: Tests attempt to download data such as
+	   ;; <https://raw.githubusercontent.com/pytorch/test-infra/master/stats/slow-tests.json>.
+	   ;; We're also missing some Python modules, such as expecttest.
+	   #:tests? #f))
     (native-inputs
      (list bash cmake ninja glog))
     (inputs
@@ -318,6 +343,7 @@ These include a barrier, broadcast, and allreduce.")
 	   cuda-11.6
 	   cudnn
 	   mkl
+   	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
 	   magma-cuda
 	   nccl
            pthreadpool
@@ -337,8 +363,6 @@ These include a barrier, broadcast, and allreduce.")
            python-six
            python-requests
            onnx                             ;propagated for its Python modules
-	   ;; below is in propagated inputs because it contains libcuda.so.1
-	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
            onnx-optimizer
            cpuinfo))
     (home-page "https://pytorch.org/")
