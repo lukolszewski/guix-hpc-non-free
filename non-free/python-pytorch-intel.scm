@@ -318,7 +318,6 @@ These include a barrier, broadcast, and allreduce.")
 	   cuda-11.6
 	   cudnn
 	   mkl
-	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
 	   magma-cuda
 	   nccl
            pthreadpool
@@ -338,6 +337,8 @@ These include a barrier, broadcast, and allreduce.")
            python-six
            python-requests
            onnx                             ;propagated for its Python modules
+	   ;; below is in propagated inputs because it contains libcuda.so.1
+	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
            onnx-optimizer
            cpuinfo))
     (home-page "https://pytorch.org/")
