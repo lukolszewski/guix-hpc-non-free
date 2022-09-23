@@ -14,6 +14,7 @@
   #:use-module (gnu packages)
   #:use-module (nongnu packages nvidia)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -329,7 +330,7 @@ These include a barrier, broadcast, and allreduce.")
 	   ;; We're also missing some Python modules, such as expecttest.
 	   #:tests? #f))
     (native-inputs
-     (list bash cmake ninja glog))
+     (list bash cmake ninja glog patchelf))
     (inputs
      (list eigen
            ;; ("fmt" ,fmt)
