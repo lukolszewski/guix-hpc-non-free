@@ -318,7 +318,7 @@ These include a barrier, broadcast, and allreduce.")
 	   cuda-11.6
 	   cudnn
 	   mkl
-	  ;; nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
+	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
 	   magma-cuda
 	   nccl
            pthreadpool
