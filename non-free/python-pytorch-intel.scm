@@ -296,9 +296,11 @@ These include a barrier, broadcast, and allreduce.")
 	      			(format #t "Patching ~a ...~%" file)
 				(define rpath (string-append (get-rpaths file) ":" #$nvidia-libs "/lib"))
 				(display (string-append "We're setting rpath:" rpath))
+				(copy-file file (string-append #$output "/backup_" (last-pair (string-split file #\/))))
 				(invoke "patchelf" "--set-rpath" rpath file))
 			      (for-each (lambda (file)
 					  (when (elf-file? file)
+					    
 					    (patch-elf file)))
 					(find-files #$output  ".*")))))
 			(add-after 'install 'remove-test-executables
