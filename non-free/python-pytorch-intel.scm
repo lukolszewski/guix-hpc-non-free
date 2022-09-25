@@ -80,7 +80,7 @@
   #:use-module (non-free mkl)
   #:use-module (non-free cuda)
   #:use-module (non-free cudnn)
- ;; #:use-module (nongnu packages nvidia)
+  #:use-module (nongnu packages nvidia)
   #:use-module (ice-9 match))
 
 (define-public magma-cuda
@@ -232,12 +232,13 @@ These include a barrier, broadcast, and allreduce.")
     (build-system python-build-system)
     (arguments
      (list #:phases #~(modify-phases %standard-phases
-			(add-before 'build 'set-environment-vars
+			(add-before 'build 'set-environment-vars-and-prepare-cuda-with-driver-dir
 			  (lambda* (#:key inputs #:allow-other-keys)
-			    (let (
+			    (let ((cuda-with-driver (assoc-ref inputs "cuda-11.6+nvidia-libs"))
 				  (cudnn (assoc-ref inputs "cudnn")))
 			      ;;(setenv "USE_DISTRIBUTED" "OFF")
 			      ;;(setenv "USE_NCCL" "OFF")
+			      (setenv "CUDA_HOME" cuda-with-driver)
 			      (setenv "GPU_TARGET" "Turing Ampere")
 			      (setenv "USE_SYSTEM_NCCL" "ON")
 			      (setenv "USE_CUDNN" "1")
@@ -375,10 +376,11 @@ These include a barrier, broadcast, and allreduce.")
            googlebenchmark
            gloo-cuda
            nnpack
-	   cuda-11.6
+	   (directory-union "cuda-11.6+nvidia-libs" (list cuda-11.6 nvidia-libs))
+;;	   cuda-11.6
 	   cudnn
 	   mkl
-   	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
+;;   	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
 	   magma-cuda
 	   nccl
            pthreadpool
