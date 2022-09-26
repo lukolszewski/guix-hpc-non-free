@@ -7,6 +7,7 @@
 ;;; experimentation.  As such, we kindly invite you not to share it.
 ;;;
 ;;; Copyright © 2018, 2019, 2020, 2022 Inria
+;;; Copyright © 2022 Lukasz Olszewski <dev@lukaszolszewski.info>
 
 (define-module (non-free cuda)
   #:use-module (guix)
@@ -213,11 +214,22 @@ libraries for NVIDIA GPUs, all of which are proprietary.")
 (define-public cuda-11.7
   (package
     (inherit cuda-11.0)
+    (name "cuda-11.7")
     (version "11.7.0")
     (source
      (cuda-source
       "https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run"
       "1nq47szb31fk1a4glsba8dy2h58vr8z7w3pbzv8bfjb5f0lnla2j"))))
+
+(define-public cuda-11.6
+  (package
+    (inherit cuda-11.0)
+    (name "cuda-11.6")
+    (version "11.6.0")
+    (source
+     (cuda-source
+      "/media/Data/software/cuda_11.6.0_510.39.01_linux.run"
+      "10wcv42ljp7hz1k0wzgwb4hi8834rfipzdc01428c1wpcdnxm0qp"))))
 
 (define-public cuda-10.2
   (package

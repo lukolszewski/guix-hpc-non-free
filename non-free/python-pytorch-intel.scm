@@ -275,6 +275,65 @@ These include a barrier, broadcast, and allreduce.")
 			    (when tests?
                               (add-installed-pythonpath inputs outputs)
                               (invoke "python" "test/run_test.py"))))
+			;;pointing libcuda.so.1 temporarily to libcuda.so stub for tests to pass validate-runpath
+			;; (add-after 'install 'fix-issue-with-libcuda.so.1
+			;;   (lambda* (#:key inputs outputs #:allow-other-keys)
+			;;     (chdir "..")
+			;;     (use-modules (ice-9 ftw)
+			;; 		 (ice-9 regex)
+			;; 		 (ice-9 rdelim)
+			;; 		 (ice-9 popen)
+			;; 		 (ice-9 textual-ports))
+			;;     (let* ((libdir (string-append #$output "/lib")))
+			;;       (symlink (car (find-files #$cuda-11.6 "libcuda.so")) (string-append libdir "/libcuda.so.1")))))
+			;; (add-after 'validate-runpath 'remove-libcuda.so.1-symlink
+			;;   (lambda* (#:key inputs outputs #:allow-other-keys)
+			;;     (chdir "..")
+			;;     (use-modules (ice-9 ftw)
+			;; 		 (ice-9 regex)
+			;; 		 (ice-9 rdelim)
+			;; 		 (ice-9 popen)
+			;; 		 (ice-9 textual-ports))
+			;;     (let* ((libdir (string-append #$output "/lib")))
+			;;       (delete-file (string-append libdir "/libcuda.so.1")))))
+			;; (add-after 'install 'fix-issue-with-libcuda.so.1
+			;;   (lambda* (#:key inputs outputs #:allow-other-keys)
+			;;     (chdir "..")
+			;;     (use-modules (ice-9 ftw)
+			;; 		 (ice-9 regex)
+			;; 		 (ice-9 rdelim)
+			;; 		 (ice-9 popen)
+			;; 		 (ice-9 textual-ports))
+			;;     (let* ((libdir (string-append #$output "/lib")))
+			;;       ;; ------------------------------
+			;;       ;; patchelf
+			;;       (define (get-interpreter file)
+			;; 	(format #t "Getting the interpreter from ~a ...~%" file)
+			;; 	(let* ((port (open-input-pipe (string-append "patchelf --print-interpreter " file)))
+			;; 	       (str  (read-line port)))
+			;; 	  (close-pipe port)
+			;; 	  str))
+			;;       (define (get-rpaths file)
+			;; 	(format #t "Getting rpaths from ~a ...~%" file)
+			;; 	(let* ((port (open-input-pipe (string-append "patchelf --print-rpath " file)))
+			;; 	       (str  (read-line port))) ; from (ice-9 rdelim)
+			;; 	  (close-pipe port)
+			;; 	  str))
+	
+			;;       (define (patch-elf file)
+			;; 	(copy-file file (string-append #$output "/backup_" (car (last-pair (string-split file #\/)))))
+	      		;; 	(format #t "Patching ~a ...~%" file)
+			;; 	(unless (string-contains file ".so")
+			;; 	  (display (string-append "We're setting the interpreter."))
+			;; 	  (invoke "patchelf" "--set-interpreter" (get-interpreter file) file))
+			;; 	(define rpath (string-append (get-rpaths file) ":" #$nvidia-libs "/lib"))
+			;; 	(display (string-append "We're setting rpath to:" rpath))
+			;; 	(invoke "patchelf" "--set-rpath" rpath file))
+			;;       (for-each (lambda (file)
+			;; 		  (when (elf-file? file)
+					    
+			;; 		    (patch-elf file)))
+			;; 		(find-files #$output  ".*")))))
 			(add-after 'install 'remove-test-executables
 			  (lambda* (#:key inputs outputs #:allow-other-keys)
 			    ;; Remove test executables, but keep other executables
@@ -309,6 +368,7 @@ These include a barrier, broadcast, and allreduce.")
      (list bash cmake ninja glog patchelf))
     (inputs
      (list eigen
+           ;; ("fmt" ,fmt)
            fp16
            gemmlowp
 	   glog
@@ -317,8 +377,10 @@ These include a barrier, broadcast, and allreduce.")
            gloo-cuda
            nnpack
 	   (directory-union "cuda-11.6+nvidia-libs" (list cuda-11.6 nvidia-libs))
+;;	   cuda-11.6
 	   cudnn
 	   mkl
+;;   	   nvidia-libs ;; this is from the nonguix channel (nongnu packages nvidia)
 	   magma-cuda
 	   nccl
            pthreadpool
