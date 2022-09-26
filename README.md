@@ -41,7 +41,11 @@ with the following snippet to request the `guix-hpc-non-free` and 'nonguix' _cha
 (cons (channel
         (name 'guix-hpc-non-free)
         (url "https://github.com/lukolszewski/guix-hpc-non-free.git")
-        (branch "luks_changes"))
+        (branch "luks_changes")
+	(introduction
+	  (make-channel-introduction 
+	    "0c201e457cbd8fc43fb2d8f5803ca7ff7f4caa1f" 
+	    (openpgp-fingerprint "F395EC34DD36058DDE47278CE65527E0F996859B"))))
       (channel
         (name 'nonguix)
         (url "https://gitlab.com/nonguix/nonguix.git"))
@@ -51,11 +55,23 @@ with the following snippet to request the `guix-hpc-non-free` and 'nonguix' _cha
 That way, `guix pull` will systematically pull not only Guix, but also
 Guix-HPC-non-free, Guix-HPC and nonguix.
 
-My pytorch 1.12 with cuda 11.6, cudnn and MKL2022.1.0 package depends on nvidia driver version 515.65.1 in the nonguix branch. As of now it is availeble in the nonguix channel. Should nonguix become updated in a way that breaks this dependency one can add the following extra line in their channels.scm just below (name 'nonguix) to get the old version of the channel: (commit "354b152ce2e0819e5b934009e9ae1d87c6ae93e1") where the commit id it the latest commit that contains nvidia-libs that use driver version 515.65.1. 
+My pytorch 1.12 with cuda 11.6, cudnn and MKL2022.1.0 package depends on nvidia driver version 515.65.1 in the nonguix branch. As of now it is availeble in the nonguix channel. Should nonguix become updated in a way that breaks this dependency one can add the following extra line in their channels.scm just below (name 'nonguix) to get the old version of the channel: (commit "354b152ce2e0819e5b934009e9ae1d87c6ae93e1") where the commit id it the latest commit that contains nvidia-libs that use driver version 515.65.1. Alternatively you can use my branch of nonguix by this channel spec:
 
-See [Guix-HPC](https://gitlab.inria.fr/guix-hpc/guix-hpc), for more
+```scheme
+       (channel
+        (name 'nonguix)
+        (url "https://gitlab.com/lukolszewski/nonguix.git")
+	(branch "luks_changes")
+        (introduction
+         (make-channel-introduction
+          "11d2753ab2d353195afb531e23cacad45298c42d"
+          (openpgp-fingerprint
+           "F395EC34DD36058DDE47278CE65527E0F996859B"))))
+```
+
+See [Guix-HPC](https://gitlab.inria.fr/guix-hpc/guix-hpc) and [NonGuix](https://gitlab.com/nonguix/nonguix), for more
 information.
 
 ## Warning
 
-Please note this is very much just a quick task I did because I needed pytorch with Cuda+MKL with guix. As such I haven't set up proper GPG signing for this channel yet. Therefore one has to use guix pull --disable-authentication to download it. This is insecure and generally discouraged so I'll be fixing it in due course. However as of now this is how it is.
+Please note this is very much just a quick task I did because I needed pytorch with Cuda+MKL on guix. As such it is likely to contain bugs and in general not provide the best user experience possible. 
