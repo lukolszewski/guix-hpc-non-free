@@ -40,6 +40,21 @@
      #~`("-DCMAKE_C_FLAGS=-O3 -g -fcommon" 
        ,@(delete "-DCMAKE_C_FLAGS=-O2 -g -fcommon" #$cf)))))))
 
+(define sundials-hodins-cuda
+(package/inherit sundials-hodins
+  (name "sundials-hodins-cuda")
+  (native-inputs
+    `(("gcc-toolchain" ,gcc-toolchain-8)))
+   (inputs
+     (modify-inputs (package-inputs sundials-hodins)
+       (append (lookup-package-input starpu+cuda "cuda"))))
+  (arguments
+    (substitute-keyword-arguments (package-arguments sundials)
+                                  ((#:configure-flags cf)
+                                   #~`("-DENABLE_CUDA=ON"
+                                       "-DCMAKE_CUDA_ARCHITECTURES=60;61;62" ,@#$cf))
+                                  ((#:tests? runtests '()) #f)))))  ; tests on GPU fail when run on non GPU nodes
+
 (define-public hodins
   (let ((commit "1824710cd71bd542da602a3cc5c0a48bccf8b6a0")
         (revision "0"))
@@ -83,6 +98,7 @@
    (propagated-inputs
      (modify-inputs (package-propagated-inputs hodins)
        (replace "starpu" starpu+cuda)
+       (replace "sundials-hodins" sundials-hodins-cuda)
        (replace "yaml-cpp" yaml-cpp-gcc8)))
   (arguments  
     (substitute-keyword-arguments (package-arguments hodins)

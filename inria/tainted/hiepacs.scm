@@ -97,7 +97,8 @@
     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
                           "-DFMR_BUILD_TESTS=ON"
-                          "-DFMR_USE_HDF5=ON")
+                          "-DFMR_USE_HDF5=ON"
+                          "-DFMR_USE_MKL_AS_BLAS=ON")
       ;; FIXME: trouble with STARPU /tmp dir.
       #:tests? #f))
 
@@ -139,6 +140,7 @@ approximations based on randomized techniques.")
                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
                           "-DFMR_BUILD_TESTS=ON"
                           "-DFMR_USE_HDF5=ON"
+                          "-DFMR_USE_MKL_AS_BLAS=ON"
                           "-DFMR_USE_CHAMELEON=ON")
       ;; FIXME: trouble with STARPU /tmp dir.
       #:tests? #f))
@@ -168,7 +170,8 @@ approximations based on randomized techniques.")
    (arguments
     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
-                          "-DDIODON_USE_INTERNAL_FMR=OFF")
+                          "-DDIODON_USE_INTERNAL_FMR=OFF"
+                          "-DDIODON_USE_MKL_AS_BLAS=ON")
       ;; FIXME: trouble with STARPU /tmp dir.
       #:tests? #f))
 
@@ -214,7 +217,8 @@ Reduction for very large datasets.")
     '(#:configure-flags `("-DBUILD_SHARED_LIBS=ON"
                           "-DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON"
                           "-DDIODON_USE_INTERNAL_FMR=OFF"
-                          "-DDIODON_USE_CHAMELEON=ON")
+                          "-DDIODON_USE_CHAMELEON=ON"
+                          "-DDIODON_USE_MKL_AS_BLAS=ON")
       ;; FIXME: trouble with STARPU /tmp dir.
       #:tests? #f))
 
