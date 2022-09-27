@@ -49,6 +49,15 @@ with the following snippet to request the `guix-hpc-non-free` and 'nonguix' _cha
       (channel
         (name 'nonguix)
         (url "https://gitlab.com/nonguix/nonguix.git"))
+      (channel
+        (name 'guix-hpc)
+        (url "https://gitlab.inria.fr/guix-hpc/guix-hpc.git")
+	;;Please note the line below is here just temporarily, it freezes guix-hpc channel
+	;;at a certain commit. Unfortunately the next commit after this one introduces
+	;;an issue that causes guix pull to fail for me. Therefore until it is resolved
+	;;I recommend to use the below.
+	(commit "aaa65038bebc947b3deae42acfc83b6f2e972511")
+	)
       %default-channels)
 ```
 
