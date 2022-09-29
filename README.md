@@ -13,8 +13,8 @@ or free software that depends on non-free software such as extensions of
 
 This is provided for convenience to HPC researchers and practitioners. Please note this repository contains software considered non-free and as such it is out of scope of support provided for Guix via the default IRC channel, the Guix mailing lists and other official GNU channels etc. Alternative resources to obtain support for running non-free software on Guix exist. The main one is the #nonguix irc channel on Libera.Chat IRC.
 
-This is my working copy of the repository that originates from https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free
-If you're interested in using my latest additions such as **pytorch v1.12 with cuda 1.6, MKL 2022.1.0 and cudnn with guix** configure your channels for the luks_changes branch. Due to the unconventional way install files have to be downloaded in advance by the user I'm not submitting those changes upstream nor I would encourage anyone to use my code. However for anyone who wants to use it, is free to do so. I show how to do this below. 
+**This is my working copy of the repository that originates from** https://gitlab.inria.fr/guix-hpc/guix-hpc-non-free
+If you're interested in using my latest additions such as **pytorch v1.12 with cuda 1.6, MKL 2022.1.0 and cudnn with guix** from here configure your channels for the luks_changes branch. Due to the unconventional way install files have to be downloaded in advance by the user I'm not submitting those changes upstream yet nor I would encourage anyone to use my code. However for anyone who wants to use it, is free to do so. I show how to do this below. 
 
 Please note due to Nvidia and Intel blocking unauthenticated downloads of Cuda and MKL this code will fail on your machine, because it expects cuda, cudnn and MLK installers to be present on a local path. If you want to get it working as-is and you've downloaded install files from NVidia and Intel you can make it work by creating the following folders and placing install files in them:
 - For cuda 11.6:
